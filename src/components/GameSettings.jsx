@@ -1,6 +1,10 @@
-export default function GameSettings({isConjugation}) {
+export default function GameSettings({isConjugation, isSpeaking}) {
     return(
-    <div className={"bg-grey-100 border-2 border-slate-800 space-y-4 px-10 rounded-md items-center"}>
+        <>
+
+
+            <div className={"bg-grey-100 border-2 border-slate-800 space-y-4 px-10 rounded-md items-center"}>
+
         <div className={"flex mt-7 gap-2"}>
         <label className={"font-medium"} htmlFor={"difficulty"}>Difficulty: </label>
 
@@ -15,7 +19,7 @@ export default function GameSettings({isConjugation}) {
         <div className={"flex mt-2 gap-2"}>
         <label className={"text-[16px] font-medium"} htmlFor={"numberQuestions"}>Number of Questions: </label>
 
-        <select className={"border-2 border-red-500 rounded-sm"} id="numberQuestions" name="numberQuestions">
+        <select className={"border-2 border-red-500 rounded-sm px-2"} id="numberQuestions" name="numberQuestions">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="15">15</option>
@@ -31,5 +35,6 @@ export default function GameSettings({isConjugation}) {
         }
 
     </div>
+        </>
     )
 }
