@@ -1,7 +1,52 @@
 import NavigationMenu from "../components/NavigationMenu.jsx";
 import GameSettings from "../components/GameSettings.jsx";
+import {useState} from "react";
+import OpenAI from "openai";
+import { playAudio } from "openai/helpers/audio"
+
+
 
 export default function SpeechPage() {
+
+    const [isActive, setIsActive] = useState(true);
+    const [userText, setUserText] = useState('');
+    const [AIText, setAIText] = useState('');
+
+    function handleOnRecord() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            alert("Speech recognition not supported in this browser.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+
+
+        recognition.onresult = async function (event) {
+            const transcript = event.results[0][0].transcript;
+            console.log("Transcript:", transcript);
+            setUserText(transcript);
+        };
+
+
+        recognition.start();
+    }
+
+    async function handleAIAudio(){
+        const openai = new OpenAI();
+
+        const response = await openai.audio.speech.create({
+            model: "gpt-4o-mini-tts",
+            voice: "coral",
+            input: userText,
+            instructions: "Speak in a cheerful and positive tone.",
+            response_format: "wav",
+        });
+
+        await playAudio(response);
+
+    }
 
     return (
         <>
@@ -28,7 +73,9 @@ export default function SpeechPage() {
                             time!</p>
                     </div>
 
-                    <button className={"text-lg font-semibold bg-slate-600 p-2 border-2 rounded-md mt-5 text-red-500"}>Begin</button>
+                    <button className={"text-lg font-semibold bg-slate-600 p-2 border-2 rounded-md mt-5 text-red-500"}
+                    onClick={() => handleOnRecord()}>Begin</button>
+
 
 
                 </div>

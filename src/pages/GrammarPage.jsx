@@ -1,7 +1,38 @@
 import NavigationMenu from "../components/NavigationMenu.jsx";
 import GameSettings from "../components/GameSettings.jsx";
+import {useState} from "react";
+import {useEffect} from "react";
+
 
 export default function GrammarPage() {
+    const [conjugations, setConjugations] = useState([]);
+    const [userResponses, setUserResponses] = useState({});
+    const [results, setResults] = useState({});
+
+
+
+    function handleResponse(){
+        const result = {}
+        for(let i = 0; i < conjugations.length; i++){
+            result[i] = {
+                isCorrect: conjugations[i].answer === userResponses[i],
+                userResponse: userResponses[i],
+                correctResponse: conjugations[i].answer
+            };
+        }
+        setResults(result);
+
+    }
+
+    function borderColor(index) {
+        if (results[index] && results[index].isCorrect) {
+            return "border-green-400";
+        } else if (results[index] && !results[index].isCorrect) {
+            return "border-red-500";
+        } else {
+            return "border-black";
+        }
+    }
 
     return (
         <>
@@ -28,15 +59,34 @@ export default function GrammarPage() {
                         Get ready to conquer conjugations and elevate your Spanish—one verb at a
                         time!</p>
 
-                    <GameSettings isConjugation={true}/>
+                    <GameSettings isConjugation={true} conjugationData={setConjugations}/>
                 </div>
 
-                    <div className={"mt-10 bg-red-500 p-10 rounded-lg"}>
-                        <h1></h1>
+                    {conjugations && (
+                        <div className={"mt-5 bg-gray-200 p-4 rounded-md"}>
+                            {conjugations.map((conjugation, index) => (
+                                <div className={`mb-5 bg-white p-2 border-2 border-black rounded-sm space-y-2 ${
+                                    
+                                    
+                                    borderColor(index)}`} key={index}>
+                                    <h1 className={"text-2xl font-semibold text-slate-800"}>{conjugation.word}</h1>
+                                    <p className={"mt-2 text-lg "}>{conjugation.sentence}</p>
 
-                    </div>
+                                    <div className={"flex gap-3 items-center"}>
+                                    <label>Type Your Answer: </label>
+                                        <input type="text" className={"border-2 border-red-500 rounded-sm py-2 text-sm p-2"}
+                                               onChange={(e) =>
+                                                   setUserResponses({...userResponses, [index]: e.target.value})} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-                <button className={"text-lg font-semibold bg-slate-600 p-2 border-2 rounded-md mt-5 text-red-500"}>Check All</button>
+                    
+
+                <button onClick={() => handleResponse()}
+                    className={"text-lg font-semibold bg-slate-600 p-2 border-2 rounded-md mt-5 text-red-500"}>Check All</button>
             </div>
             </div>
 
