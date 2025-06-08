@@ -29,14 +29,7 @@ These bugs are being actively debugged and resolved. Expect a smoother voice int
 
 TiemposPerfectos is inspired by the desire to make Spanish learning more **engaging**, **personalized**, and **tech-driven**, especially for students who benefit from interactive and immersive experiences.
 
-## 📦 Installation
 
-```bash
-git clone https://github.com/your-username/tiemposperfectos.git
-cd tiemposperfectos
-npm install
-npm start
-```
 
 ## 📫 Contact
 
