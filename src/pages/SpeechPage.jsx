@@ -9,16 +9,21 @@ import {Clock} from "../components/Clock.jsx";
 
 export default function SpeechPage() {
 
-    const [isActive, setIsActive] = useState(true);
     const [userText, setUserText] = useState([]);
     const [AIText, setAIText] = useState([]);
     const [prompt, setPrompt] = useState();
-    const [time, setTime] = useState(10);
     const [recordingActive, setRecordingActive] = useState(false);
-    const [isUserTurn, setIsUserTurn] = useState(true);
+    const [isUserTurn, setIsUserTurn] = useState(false);
+    const [isIntermission, setIsIntermission] = useState(false);
+    const [isClockActive, setIsClockActive] = useState(false);
+    const [isMicrophoneRecognized, setIsMicrophoneRecognized] = useState(false);
 
 
     function handleOnRecord() {
+        if (isMicrophoneRecognized) {
+            return;
+        }
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
         if (!SpeechRecognition) {
@@ -27,17 +32,30 @@ export default function SpeechPage() {
         }
 
         const recognition = new SpeechRecognition();
-
+        setIsMicrophoneRecognized(true);
 
         recognition.onresult = async function (event) {
             const transcript = event.results[0][0].transcript;
-            setUserText([...userText, transcript]);
-            setIsUserTurn(false);
+            setUserText(prev => [...prev, transcript]);
+            setIsClockActive(true)
+
+            setTimeout(() => {
+                setIsIntermission(true)
+                setIsUserTurn(false);
+            }, 5000);
         };
 
+        recognition.onend = function () {
+            setIsMicrophoneRecognized(false);
+        };
+
+        recognition.onerror = function () {
+            setIsMicrophoneRecognized(false);
+        };
 
         recognition.start();
     }
+
 
     function generatePrompt() {
         axios.post("http://localhost:8080/generate-prompt", {}).then(res => {
@@ -52,16 +70,22 @@ export default function SpeechPage() {
             topic: prompt,
 
         }).then(res => {
-            setAIText([...AIText, res.data.AIResponse]);
-            setIsUserTurn(true);
+            setAIText(prev => [...prev, res.data.AIResponse]);
+            setIsClockActive(true)
+            setTimeout(() => {
+                setIsIntermission(true)
+                setIsUserTurn(true);
+            }, 5000);
         })
     }
 
     useEffect(() => {
         if (recordingActive) {
             if (isUserTurn) {
+                setIsIntermission(false);
                 handleOnRecord();
             } else {
+                setIsIntermission(false)
                 AISpeak();
             }
         }
@@ -109,16 +133,26 @@ export default function SpeechPage() {
                     {prompt && (
                         <div
                             className={"mt-5 bg-gray-200 p-4 rounded-md z-4 fixed top-0 left-0 w-full h-full"}>
-                            <Clock duration={time} isReordingActive={setRecordingActive}></Clock>
+                            {
+                                isClockActive && (
+                                    <Clock duration={10} isReordingActive={setRecordingActive}></Clock>
+                                )
+                            }
                             <div className={"mb-5  mt-2 bg-white p-2 border-2 border-black rounded-sm"}>
                                 <h1 className={"text-2xl font-semibold text-slate-800"}>Prompt: {prompt}</h1>
 
 
-                                <button onClick={() => AISpeak()}
+                                <button onClick={() => setRecordingActive(true)}
                                         className={"text-lg font-semibold bg-slate-600 p-2 " +
                                             "border-2 rounded-md mt-5 text-red-500"}>Begin
                                     Conversation
                                 </button>
+
+                                {
+                                    isIntermission && (
+                                        <Clock duration={5} isReordingActive={setRecordingActive}></Clock>
+                                    )
+                                }
 
 
                                 {userText.length > 0 && (
