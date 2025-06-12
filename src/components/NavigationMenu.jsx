@@ -19,9 +19,6 @@ export default function NavigationMenu() {
                         <Link
                             className={"text-[28px] font-bold text-slate-700 hover:underline hover:text-red-500"}
                             to="/reading">Reading</Link>
-                        <Link
-                            className={"text-[28px] font-bold text-slate-700 hover:underline hover:text-red-500"}
-                            to="/profile">Profile</Link>
                     </menu>
                 </nav>
             </div>

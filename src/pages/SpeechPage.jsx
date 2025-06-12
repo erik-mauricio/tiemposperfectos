@@ -5,6 +5,7 @@ import OpenAI from "openai";
 import {playAudio} from "openai/helpers/audio"
 import axios from "axios";
 import {Clock} from "../components/Clock.jsx";
+import {useEffect} from "react";
 
 
 export default function SpeechPage() {
