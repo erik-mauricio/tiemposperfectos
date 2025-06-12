@@ -10,10 +10,13 @@ import {Clock} from "../components/Clock.jsx";
 export default function SpeechPage() {
 
     const [isActive, setIsActive] = useState(true);
-    const [userText, setUserText] = useState('');
-    const [AIText, setAIText] = useState('');
-    const [prompt, setPrompt] = useState("");
+    const [userText, setUserText] = useState([]);
+    const [AIText, setAIText] = useState([]);
+    const [prompt, setPrompt] = useState();
     const [time, setTime] = useState(10);
+    const [recordingActive, setRecordingActive] = useState(false);
+    const [isUserTurn, setIsUserTurn] = useState(true);
+
 
     function handleOnRecord() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -28,7 +31,8 @@ export default function SpeechPage() {
 
         recognition.onresult = async function (event) {
             const transcript = event.results[0][0].transcript;
-            setUserText(transcript);
+            setUserText([...userText, transcript]);
+            setIsUserTurn(false);
         };
 
 
@@ -44,22 +48,28 @@ export default function SpeechPage() {
 
     function AISpeak() {
         axios.post("http://localhost:8080/AI-speak", {
-            params: {
-                text: userText,
-                topic: prompt,
-            }
+            text: userText[userText.length - 1],
+            topic: prompt,
+
         }).then(res => {
+            setAIText([...AIText, res.data.AIResponse]);
+            setIsUserTurn(true);
         })
     }
 
-    if (time === 0) {
-        AISpeak()
-    }
+    useEffect(() => {
+        if (recordingActive) {
+            if (isUserTurn) {
+                handleOnRecord();
+            } else {
+                AISpeak();
+            }
+        }
+    }, [isUserTurn, recordingActive]);
 
 
     return (
         <>
-            <Clock duration={time}/>
 
             <div className="bg-grey-100 min-h-screen ">
                 <NavigationMenu/>
@@ -99,9 +109,9 @@ export default function SpeechPage() {
                     {prompt && (
                         <div
                             className={"mt-5 bg-gray-200 p-4 rounded-md z-4 fixed top-0 left-0 w-full h-full"}>
-                            <div className={"mb-5 bg-white p-2 border-2 border-black rounded-sm"}>
-                                <h1 className={"text-2xl font-semibold text-slate-800"}>Prompt</h1>
-                                <p className={"mt-2 text-lg"}>{prompt}</p>
+                            <Clock duration={time} isReordingActive={setRecordingActive}></Clock>
+                            <div className={"mb-5  mt-2 bg-white p-2 border-2 border-black rounded-sm"}>
+                                <h1 className={"text-2xl font-semibold text-slate-800"}>Prompt: {prompt}</h1>
 
 
                                 <button onClick={() => AISpeak()}
@@ -109,6 +119,21 @@ export default function SpeechPage() {
                                             "border-2 rounded-md mt-5 text-red-500"}>Begin
                                     Conversation
                                 </button>
+
+
+                                {userText.length > 0 && (
+                                    <div className="mt-3 bg-blue-100 p-3 rounded">
+                                        <h2 className="text-xl font-bold text-blue-900">You said:</h2>
+                                        <p>{userText[userText.length - 1]}</p>
+                                    </div>
+                                )}
+
+                                {AIText.length > 0 && (
+                                    <div className="mt-3 bg-green-100 p-3 rounded">
+                                        <h2 className="text-xl font-bold text-green-900">AI said:</h2>
+                                        <p>{AIText[AIText.length - 1]}</p>
+                                    </div>
+                                )}
 
 
                             </div>
