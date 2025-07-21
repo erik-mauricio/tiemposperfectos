@@ -74,7 +74,7 @@ export default function ReadingPage() {
           <>
             <NavigationMenu></NavigationMenu>
 
-            <div className="flex gap-4 bg-slate-300">
+            <div className="flex gap-4 bg-slate-300 ">
               <Controls />
 
               <div className="space-y-3 mt-2 p-4">
@@ -126,7 +126,7 @@ export default function ReadingPage() {
                           className=" p-4 bg-white border-2 border-[#dee2e6] rounded-md m-2"
                           key={index}
                         >
-                          <h2 className="font-bold text-2xl mb-2 text-[#2c3e50]">
+                          <h2 className="font-bold text-2xl mb-1 text-[#2c3e50]">
                             Question {index + 1}
                           </h2>
 
@@ -154,7 +154,7 @@ export default function ReadingPage() {
                       ))}
 
                       <div className="text-center">
-                        <button className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-6Re00">
+                        <button className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-600">
                           Submit All
                         </button>
                       </div>
