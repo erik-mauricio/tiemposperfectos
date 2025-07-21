@@ -4,7 +4,7 @@ export default function NavigationMenu() {
     return (
       <div className={"bg-[#2c3e50]"}>
         <div className={"flex items-center justify-between px-14 py-2"}>
-          <h1 className={"text-[64px] text-[#ebeff4] font-bold"}>
+          <h1 className={"text-[42px] text-[#ebeff4] font-bold"}>
             TiemposPerfectos
           </h1>
           <nav>

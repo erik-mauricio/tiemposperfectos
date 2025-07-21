@@ -78,7 +78,7 @@ export default function ReadingPage() {
               <Controls />
 
               <div className="space-y-3 mt-2 p-4">
-                <div className="bg-[#bdc3c7] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border-l-4 border-[#3498db] max-w-4lg space-y-4">
+                <div className="bg-[#8099aa] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6  max-w-4lg space-y-4">
                   <h1 className="font-bold text-4xl text-center ">
                     Reading Comphresion
                   </h1>
@@ -100,7 +100,7 @@ export default function ReadingPage() {
                   </p>
                 </div>
 
-                <div className="border-0 rounded-md overflow-hidden">
+                <div className="border-0 rounded-md overflow-hidden bg-white">
                   <h2 className="font-bold text-3xl text-white bg-slate-600 p-4">
                     Reading Passage
                   </h2>
@@ -118,46 +118,49 @@ export default function ReadingPage() {
                       settings and let’s get reading!
                     </p>
                   </div>
-                </div>
 
-                {readingData?.questions?.length > 0 && (
-                  <div className="space-y-4">
-                    {readingData.questions.map((question, index) => (
-                      <div
-                        className="border-2 rounded-md border-black p-4 bg-white"
-                        key={index}
-                      >
-                        <h2 className="font-bold text-2xl mb-2 bg-">
-                          Question {index + 1}
-                        </h2>
+                  {readingData?.questions?.length > 0 && (
+                    <>
+                      {readingData.questions.map((question, index) => (
+                        <div
+                          className=" p-4 bg-white border-2 border-[#dee2e6] rounded-md m-2"
+                          key={index}
+                        >
+                          <h2 className="font-bold text-2xl mb-2 text-[#2c3e50]">
+                            Question {index + 1}
+                          </h2>
 
-                        <p className="mb-4 text-xl">{question.question}</p>
+                          <p className="mb-4 text-xl">{question.question}</p>
 
-                        {Object.entries(question.responses).map(
-                          ([letter, text]) => (
-                            <div className="flex-col mb-5 ">
-                              <label
-                                key={letter}
-                                className="border-2 border-black px-5 py-2 rounded-lg w-[500px]"
-                              >
-                                <input
-                                  type="radio"
-                                  name={`question-${index}`}
-                                  value={text}
-                                  className="p-2 "
-                                />
-                                {letter}. {text}
-                              </label>
-                            </div>
-                          )
-                        )}
+                          {Object.entries(question.responses).map(
+                            ([letter, text]) => (
+                              <div className="flex-col mb-8">
+                                <label
+                                  key={letter}
+                                  className="border-2 border-[#e9ecef] px-5 py-3 rounded-lg  bg-[#f8f9fa] hover:border-[#a6cbef]"
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`question-${index}`}
+                                    value={text}
+                                    className="px-4 ml-2"
+                                  />
+                                  {" " + letter}. {text}
+                                </label>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      ))}
+
+                      <div className="text-center">
+                        <button className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-6Re00">
+                          Submit All
+                        </button>
                       </div>
-                    ))}
-                  </div>
-                )}
-                <button className="border-2 border-black bg-sky-700 p-2 rounded-lg min-w-sm">
-                  Submit
-                </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </>
