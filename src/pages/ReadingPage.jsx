@@ -75,7 +75,7 @@ export default function ReadingPage() {
             <NavigationMenu></NavigationMenu>
 
             <div className="flex gap-4 bg-slate-300 ">
-              <Controls />
+              <Controls gameType={"reading"} />
 
               <div className="space-y-3 mt-2 p-4">
                 <div className="bg-[#8099aa] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6  max-w-4lg space-y-4">
