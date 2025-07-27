@@ -44,7 +44,11 @@ export default function SpeechPage() {
           <Controls gameType="speech" />
 
           <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
-            <PageCard text={"Speech Practice"}></PageCard>
+            <PageCard
+              text={"Speech Practice"}
+              bgColor={"oklch(70.2% 0.183 293.541)"}
+              borderColor={"#fff"}
+            ></PageCard>
 
             <WelcomeText
               heading={"Speech Practice"}
@@ -60,7 +64,7 @@ export default function SpeechPage() {
 
             <Instructions
               title={"Live Conversation Practice"}
-              titleColor={"#2c3e50"}
+              titleColor={"oklch(70.2% 0.183 293.541)"}
               text={"hi"}
               isSpeech={true}
             >

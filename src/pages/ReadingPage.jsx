@@ -81,7 +81,10 @@ export default function ReadingPage() {
               <Controls gameType={"reading"} />
 
               <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
-                <PageCard text={"Reading Comprehension"}></PageCard>
+                <PageCard
+                  text={"Reading Comprehension"}
+                  bgColor={"oklch(70.7% 0.165 254.624)"}
+                ></PageCard>
 
                 <WelcomeText
                   heading={"Welcome to Reading Comphresion Practice"}
@@ -107,6 +110,7 @@ export default function ReadingPage() {
                       questions to test your skills. It’s a fun, interactive way
                       to boost your reading and critical thinking — so pick your
                       settings and let’s get reading!`}
+                  titleColor={"oklch(70.7% 0.165 254.624)"}
                 >
                   {readingData?.questions?.length > 0 && (
                     <>
