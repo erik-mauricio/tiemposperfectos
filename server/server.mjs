@@ -35,21 +35,27 @@ Endpoint queries conjugations collection filters by user difficulty and tense
 */
 app.get('/conjugations', async (req, res) => {
     const difficulty = req.query.difficulty
-    const numberQuestions = req.query.numberQuestions
-    const searchText = req.query.q
+    const numberQuestions = parseInt(req.query.numberQuestions);
+    const tense = req.query.tense
 
 
-    let filter = {}
+    let filter = {};
     if (difficulty) {
-        filter.difficulty = difficulty;
+      filter.difficulty = difficulty;
     }
-    if (searchText) {
-        filter.$text = {$search: searchText}
+    if (tense) {
+      filter.tense = tense;
     }
 
-    const conjugations = await db.collection('conjugations')
-        .find(filter).limit(parseInt(numberQuestions))
-        .toArray();
+    const filters =[
+        {$match: filter}, {$sample: {size: numberQuestions}}
+    ]
+
+
+    const conjugations = await db
+      .collection("conjugations")
+      .aggregate(filters)
+      .toArray();
     console.log(conjugations)
     res.status(200).json(conjugations);
 });

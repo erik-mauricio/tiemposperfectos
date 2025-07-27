@@ -1,4 +1,7 @@
-import { useState } from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useDebounce } from "use-debounce";
+
 export default function Controls({gameType}) {
   const [difficulty, setDifficulty] = useState("Beginner");
   const [numQuestions, setNumQuestions] = useState();
@@ -18,6 +21,12 @@ export default function Controls({gameType}) {
   };
 
   const verbTenses = ["Presente", "Imperfecto"]
+
+  function loadConjugations(){
+    axios.get()
+  }
+
+
 
  
   return (
