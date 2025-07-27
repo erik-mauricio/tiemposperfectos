@@ -3,9 +3,7 @@ export default function Controls({gameType}) {
   const [difficulty, setDifficulty] = useState("Beginner");
   const [numQuestions, setNumQuestions] = useState();
 
-  const handleChange = (event) => {
-    setDifficulty(event.target.value);
-  };
+  const handleChange = (e) => setDifficulty(e.target.value);
 
   const questionOptions = {
     "reading": ["3", "5", "8"],
@@ -24,7 +22,7 @@ export default function Controls({gameType}) {
  
   return (
     <>
-      <aside className="h-screen p-4 bg-[rgb(55,75,90)] space-y-2">
+      <aside className="h-screen p-4 bg-[rgb(55,75,90)] space-y-2 max-w-xs">
         <h2 className="font-bold text-3xl text-[#f8f9fa]">Reading Setup</h2>
 
         {gameType == "grammar" && (
@@ -56,7 +54,6 @@ export default function Controls({gameType}) {
           <select
             id="difficulty"
             value={difficulty}
-            onChange={handleChange}
             className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
           >
             <option value="Beginner">Beginner</option>
@@ -66,20 +63,19 @@ export default function Controls({gameType}) {
         </div>
 
         <label className="text-xl text-[#bdc3c7] font-bold">Questions: </label>
-        <div className="flex gap-3 mt-2">
-          <button className="flex-1 rounded-lg py-2 px-10 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]">
+        <div className="flex gap-3 mt-2 text-center">
+          <button className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]">
             {questionOptions[gameType][0]}
           </button>
-          <button className="flex-1 rounded-lg py-2 px-10 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]">
+          <button className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]">
             {questionOptions[gameType][1]}
           </button>
-          <button className="flex-1 rounded-lg py-2 px-10 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]"
-                  onClick={(e) => setNumQuestions(e.target.value)}>
+          <button className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22] clicked">
             {questionOptions[gameType][2]}
           </button>
         </div>
 
-        <button className="rounded-md px-23 py-4 bg-[#3498db] mt-4 text-md text-white font-bold whitespace-nowrap text-center hover:bg-[#2980b9]">
+        <button className="rounded-md px-6 py-4 bg-[#3498db] mt-4 text-white font-bold text-center hover:bg-[#2980b9] w-full max-w-xs">
           {btnText[gameType]}
         </button>
 

@@ -1,6 +1,9 @@
 import NavigationMenu from "../components/NavigationMenu.jsx";
 import {useState} from "react";
 import Controls from "../components/Controls.jsx";
+import PageCard from "../components/PageCard.jsx";
+import WelcomeText from "../components/WelcomeText.jsx";
+import Instructions from "../components/Instructions.jsx";
 
 export default function ReadingPage() {
     const mockData = {
@@ -77,18 +80,12 @@ export default function ReadingPage() {
             <div className="flex gap-4 bg-slate-300 ">
               <Controls gameType={"reading"} />
 
-              <div className="space-y-3 mt-2 p-4">
-                <div className="bg-[#8099aa] rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6  max-w-4lg space-y-4">
-                  <h1 className="font-bold text-4xl text-center ">
-                    Reading Comphresion
-                  </h1>
-                </div>
-                <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6  max-w-4lg space-y-4">
-                  <h1 className="font-bold text-2xl text-[#2c3e50]">
-                    Welcome to Reading Comphresion Practice
-                  </h1>
-                  <p>
-                    On this page, you get to take control of your learning. Use
+              <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
+                <PageCard text={"Reading Comprehension"}></PageCard>
+
+                <WelcomeText
+                  heading={"Welcome to Reading Comphresion Practice"}
+                  text={` On this page, you get to take control of your learning. Use
                     the panel on the left to choose how tough you want your
                     passage to be — Beginner, Intermediate, or Advanced — and
                     then pick how many questions you're ready to tackle (3, 5,
@@ -96,18 +93,12 @@ export default function ReadingPage() {
                     passage just for you, along with comprehension questions to
                     test your skills. It’s a fun, interactive way to boost your
                     reading and critical thinking — so pick your settings and
-                    let’s get reading!
-                  </p>
-                </div>
+                    let’s get reading!`}
+                ></WelcomeText>
 
-                <div className="border-0 rounded-md overflow-hidden bg-white">
-                  <h2 className="font-bold text-3xl text-white bg-slate-600 p-4">
-                    Reading Passage
-                  </h2>
-
-                  <div className="p-4  bg-[#f8f9fa]">
-                    <p>
-                      On this page, you get to take control of your learning.
+                <Instructions
+                  title={"Reading Passage"}
+                  text={`On this page, you get to take control of your learning.
                       Use the panel on the left to choose how tough you want
                       your passage to be — Beginner, Intermediate, or Advanced —
                       and then pick how many questions you're ready to tackle
@@ -115,10 +106,8 @@ export default function ReadingPage() {
                       reading passage just for you, along with comprehension
                       questions to test your skills. It’s a fun, interactive way
                       to boost your reading and critical thinking — so pick your
-                      settings and let’s get reading!
-                    </p>
-                  </div>
-
+                      settings and let’s get reading!`}
+                >
                   {readingData?.questions?.length > 0 && (
                     <>
                       {readingData.questions.map((question, index) => (
@@ -152,15 +141,9 @@ export default function ReadingPage() {
                           )}
                         </div>
                       ))}
-
-                      <div className="text-center">
-                        <button className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-600">
-                          Submit All
-                        </button>
-                      </div>
                     </>
                   )}
-                </div>
+                </Instructions>
               </div>
             </div>
           </>
