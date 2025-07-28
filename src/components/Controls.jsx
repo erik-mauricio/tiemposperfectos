@@ -2,17 +2,21 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 
-export default function Controls({gameType}) {
-  const [difficulty, setDifficulty] = useState("Beginner");
-  const [numQuestions, setNumQuestions] = useState();
+export default function Controls({ gameType, conjugationsHandler }) {
+  const [difficulty, setDifficulty] = useState("beginner");
+  const [numQuestions, setNumQuestions] = useState(5);
+  const [tense, setTense] = useState("presente");
+
+  console.log(numQuestions);
+  console.log(tense);
 
   const handleChange = (e) => setDifficulty(e.target.value);
 
   const questionOptions = {
-    "reading": ["3", "5", "8"],
-    "grammar": ["5", "10", "15"],
-    "speech": ["3s", "5s", "10s"]
-  }
+    reading: ["3", "5", "8"],
+    grammar: ["5", "10", "15"],
+    speech: ["3s", "5s", "10s"],
+  };
 
   const btnText = {
     reading: "New Passage",
@@ -20,15 +24,22 @@ export default function Controls({gameType}) {
     speech: "New Conversation",
   };
 
-  const verbTenses = ["Presente", "Imperfecto"]
+  const verbTenses = ["presente", "imperfecto"];
 
-  function loadConjugations(){
-    axios.get()
+  function loadConjugations() {
+    axios
+      .get("http://localhost:8080/conjugations", {
+        params: {
+          tense: tense,
+          difficulty: difficulty,
+          numberQuestions: numQuestions,
+        },
+      })
+      .then((res) => {
+        conjugationsHandler(res.data);
+      });
   }
 
-
-
- 
   return (
     <>
       <aside className="h-screen p-4 bg-[rgb(55,75,90)] space-y-2 max-w-xs">
@@ -40,15 +51,17 @@ export default function Controls({gameType}) {
               Grammar Tense:{" "}
             </label>
 
-            <div className="flex col space-y-2 mt-2">
+            <div className="flex-col space-y-2 mt-2">
               <select
-                id="difficulty"
-                value={difficulty}
-                onChange={handleChange}
+                id="tense"
+                value={tense}
+                onChange={(e) => setTense(e.target.value)}
                 className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
               >
                 {verbTenses.map((tense, index) => (
-                  <option value="Beginner">{tense}</option>
+                  <option key={index} value={tense}>
+                    {tense}
+                  </option>
                 ))}
               </select>
             </div>
@@ -63,9 +76,10 @@ export default function Controls({gameType}) {
           <select
             id="difficulty"
             value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
             className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
           >
-            <option value="Beginner">Beginner</option>
+            <option value="beginner">Beginner</option>
             <option value="Intermediate">Intermediate</option>
             <option value="Advanced">Advanced</option>
           </select>
@@ -73,18 +87,33 @@ export default function Controls({gameType}) {
 
         <label className="text-xl text-[#bdc3c7] font-bold">Questions: </label>
         <div className="flex gap-3 mt-2 text-center">
-          <button className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]">
+          <button
+            className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]"
+            value={parseInt(questionOptions[gameType][0])}
+            onClick={(e) => setNumQuestions(e.target.value)}
+          >
             {questionOptions[gameType][0]}
           </button>
-          <button className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]">
+          <button
+            className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22]"
+            value={parseInt(questionOptions[gameType][1])}
+            onClick={(e) => setNumQuestions(e.target.value)}
+          >
             {questionOptions[gameType][1]}
           </button>
-          <button className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22] clicked">
+          <button
+            className="flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 bg-[#f39c12] w-20 text-white hover:bg-[#e67e22] clicked"
+            value={parseInt(questionOptions[gameType][2])}
+            onClick={(e) => setNumQuestions(e.target.value)}
+          >
             {questionOptions[gameType][2]}
           </button>
         </div>
 
-        <button className="rounded-md px-6 py-4 bg-[#3498db] mt-4 text-white font-bold text-center hover:bg-[#2980b9] w-full max-w-xs">
+        <button
+          className="rounded-md px-6 py-4 bg-[#3498db] mt-4 text-white font-bold text-center hover:bg-[#2980b9] w-full max-w-xs"
+          onClick={() => loadConjugations()}
+        >
           {btnText[gameType]}
         </button>
 

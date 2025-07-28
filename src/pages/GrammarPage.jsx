@@ -9,44 +9,7 @@ import WelcomeText from "../components/WelcomeText.jsx";
 
 
 export default function GrammarPage() {
-  const exercises = 
-    [
-        {
-            sentence: "Yo _____ (estudiar) español por tres años.",
-            answer: "he estudiado",
-            hint: "Use 'haber' + past participle",
-            translation: "I have studied Spanish for three years."
-        },
-        {
-            sentence: "Ellos _____ (viajar) a México este año.",
-            answer: "han viajado", 
-            hint: "Remember to conjugate 'haber' for 'ellos'",
-            translation: "They have traveled to Mexico this year."
-        },
-        {
-            sentence: "¿Tú _____ (ver) esa película?",
-            answer: "has visto",
-            hint: "'ver' has an irregular past participle",
-            translation: "Have you seen that movie?"
-        },
-        {
-            sentence: "Nosotros _____ (comer) en ese restaurante antes.",
-            answer: "hemos comido",
-            hint: "Regular -er verb + nosotros form of haber",
-            translation: "We have eaten at that restaurant before."
-        },
-        {
-            sentence: "María _____ (escribir) muchas cartas.",
-            answer: "ha escrito",
-            hint: "'escribir' has an irregular past participle",
-            translation: "María has written many letters."
-        }
-    ]
-
-
-    const [conjugations, setConjugations] = useState(exercises);
-
-  
+    const [conjugations, setConjugations] = useState([]);
 
     const splitSentence = (setence) => {
       const newSentence = setence.split("_____");
@@ -58,7 +21,7 @@ export default function GrammarPage() {
         <NavigationMenu />
 
         <div className="flex gap-4 bg-slate-300 ">
-          <Controls gameType={"grammar"} />
+          <Controls gameType={"grammar"} conjugationsHandler={setConjugations} />
 
           <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
             <PageCard
@@ -107,7 +70,7 @@ export default function GrammarPage() {
                   and context clues."
               titleColor={"#e74c3c"}
             >
-              {conjugations.map((question, index) => (
+              {conjugations?.length > 0 && (conjugations.map((question, index) => (
                 <div className="p-3" key={index}>
                   <h3 className="text-[#e74c3c] font-bold text-xl">
                     Exercise {index + 1}
@@ -127,7 +90,7 @@ export default function GrammarPage() {
                     </p>
                   </div>
                 </div>
-              ))}
+              )))}
             </Instructions>
           </div>
         </div>

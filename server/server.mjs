@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import {MongoClient, ObjectId} from 'mongodb';
-import OpenAI from "openai";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -11,9 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+
 
 // log every request to the console
 app.use((req, res, next) => {
@@ -34,9 +31,12 @@ const db = conn.db('app');
 Endpoint queries conjugations collection filters by user difficulty and tense
 */
 app.get('/conjugations', async (req, res) => {
-    const difficulty = req.query.difficulty
+    const difficulty = req.query.difficulty;
+    console.log(difficulty)
     const numberQuestions = parseInt(req.query.numberQuestions);
-    const tense = req.query.tense
+    console.log(numberQuestions);
+    const tense = req.query.tense;
+    console.log(tense);
 
 
     let filter = {};
