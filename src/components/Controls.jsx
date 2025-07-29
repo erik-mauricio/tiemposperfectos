@@ -1,11 +1,13 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useDebounce } from "use-debounce";
 
 export default function Controls({ gameType, conjugationsHandler, gameSettings}) {
   const [difficulty, setDifficulty] = useState("beginner");
   const [numQuestions, setNumQuestions] = useState(5);
   const [tense, setTense] = useState("presente");
+  const [topic, setTopic] = useState("")
+  const [settings, setSettings] = useState({})
 
   console.log(numQuestions);
   console.log(tense);
@@ -23,6 +25,29 @@ export default function Controls({ gameType, conjugationsHandler, gameSettings})
   };
 
   const verbTenses = ["presente", "imperfecto"];
+
+  const topics = [
+    "Cultura",
+    "Historia",
+    "Comida",
+    "Geografía",
+    "Arte",
+    "Música",
+    "Literatura",
+    "Fiestas",
+    "Tecnología",
+    "Cine",
+    "Vida cotidiana",
+    "Deportes",
+    "Educación",
+    "Viajes",
+    "Naturaleza",
+    "Política",
+    "Economía",
+    "Religión",
+    "Costumbres",
+    "Ciencia",
+  ];
 
   function loadConjugations() {
     axios
@@ -59,6 +84,29 @@ export default function Controls({ gameType, conjugationsHandler, gameSettings})
                 {verbTenses.map((tense, index) => (
                   <option key={index} value={tense}>
                     {tense}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {gameType == "reading" && (
+          <div>
+            <label className="text-xl text-[#bdc3c7] font-bold ">
+              Topic:{" "}
+            </label>
+
+            <div className="flex-col space-y-2 mt-2">
+              <select
+                id="tense"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
+              >
+                {topics.map((topic, index) => (
+                  <option key={index} value={topic}>
+                    {topic}
                   </option>
                 ))}
               </select>

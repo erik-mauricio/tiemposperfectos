@@ -530,3 +530,8 @@ db.conjugations.insertMany([
     difficulty: "beginner",
   },
 ]);
+
+db.passages.drop()
+db.createCollection("passages")
+
+db.passages.insertMany()
