@@ -20,13 +20,9 @@ export default function Instructions({children, title, text, titleColor, isSpeec
         <div className="justify-center flex gap-2 ">
           {!isSpeech && (
             <>
-              <button className="inline border-2 border-black bg-red-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-600">
-                Check Answers
-              </button>
+        
 
-              <button className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-600">
-                Submit All
-              </button>
+              
             </>
           )}
         </div>

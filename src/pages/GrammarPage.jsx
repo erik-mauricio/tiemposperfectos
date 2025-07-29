@@ -10,10 +10,40 @@ import WelcomeText from "../components/WelcomeText.jsx";
 
 export default function GrammarPage() {
     const [conjugations, setConjugations] = useState([]);
+    const [userAnswers, setUserAnswers] = useState({})
+    const [booleanResponses, setBooleanResponses] = useState([])
+    const [settings, setSettings] = useState({difficulty: "", numQs: ""})
+    console.log(userAnswers)
+    const correctAnswers = { ...conjugations.map((item) => item.answer) };
+    console.log(correctAnswers)
+    
 
     const splitSentence = (setence) => {
       const newSentence = setence.split("_____");
       return newSentence
+    }
+
+
+
+    const checkResponses = (responses) => {
+      const results = []
+      for (const [key, value] of Object.entries(userAnswers)) {
+        results.push(correctAnswers[key] === value);
+      }
+      console.log(results)
+      setBooleanResponses(results)
+      
+    }
+
+    const getScore = () => {
+      let count = 0
+      for(let i = 0; i < conjugations.length; ++i){
+        if(booleanResponses[i]){
+          count += 1
+        }
+      }
+      return (count / conjugations.length) * 100
+
     }
 
     return (
@@ -21,7 +51,7 @@ export default function GrammarPage() {
         <NavigationMenu />
 
         <div className="flex gap-4 bg-slate-300 ">
-          <Controls gameType={"grammar"} conjugationsHandler={setConjugations} />
+          <Controls gameType={"grammar"} conjugationsHandler={setConjugations} gameSettings={setSettings}/>
 
           <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
             <PageCard
@@ -47,13 +77,16 @@ export default function GrammarPage() {
                 <h2 className="text-2xl text-[#2c3e50] font-bold">Tense</h2>
 
                 <h3 className="text-xl text-gray-500">
-                  Difficulty: Beginner * 5 excersies
+                  Difficulty: {settings.difficulty} * {settings.numQs} excersies
                 </h3>
               </div>
 
               <div>
                 <h2 className="text-2xl text-center font-bold text-[#e74c3c]">
-                  60%
+                  {
+                    booleanResponses.length > 0 &&
+                    (getScore())
+                  }%
                 </h2>
                 <p className="text-xl text-gray-500">Current score</p>
               </div>
@@ -75,12 +108,15 @@ export default function GrammarPage() {
                   <h3 className="text-[#e74c3c] font-bold text-xl">
                     Exercise {index + 1}
                   </h3>
-                  <div className="rounded-md bg-[#f8f9fa] border-2 border-[#e9ecef] p-4 hover:border-[#e74c3c]">
+                  <div className="rounded-md bg-[#f8f9fa] border-2 border-[#e9ecef] p-4 hover:border-[#e74c3c]"
+                      style={{borderColor: booleanResponses[index] && booleanResponses?.length > 0 ? 'green' : 'red'}}>
                     <label>
                       {splitSentence(question.sentence)[0]}
                       <input
                         type="text"
                         className="border-2 border-[#e74c3c] rounded-md"
+                        value={userAnswers[index]}
+                        onChange={(e) => setUserAnswers({...userAnswers, [index]: e.target.value }) }
                       ></input>
                       {splitSentence(question.sentence)[1]}
                     </label>
@@ -91,6 +127,10 @@ export default function GrammarPage() {
                   </div>
                 </div>
               )))}
+              <button className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-600"
+                      onClick={() => checkResponses(userAnswers) }>
+                Submit All
+              </button>
             </Instructions>
           </div>
         </div>

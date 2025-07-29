@@ -2,15 +2,13 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 
-export default function Controls({ gameType, conjugationsHandler }) {
+export default function Controls({ gameType, conjugationsHandler, gameSettings}) {
   const [difficulty, setDifficulty] = useState("beginner");
   const [numQuestions, setNumQuestions] = useState(5);
   const [tense, setTense] = useState("presente");
 
   console.log(numQuestions);
   console.log(tense);
-
-  const handleChange = (e) => setDifficulty(e.target.value);
 
   const questionOptions = {
     reading: ["3", "5", "8"],
