@@ -36,14 +36,7 @@ export default function SpeechPage() {
     },
   ];
 
-  const convoType = [
-    "Presentation/Formal speech",
-    "Casual conversation",
-    "Storytelling",
-    "Debate/Argument",
-    "Interview responses",
-    "Impromptu speaking",
-  ];
+
 
     return (
       <>

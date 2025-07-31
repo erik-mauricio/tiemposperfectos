@@ -11,6 +11,7 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
 
   const [liveSearchText, setLiveSearchText] = useState("")
 
+  const controlTitle = {reading: "Reading Setup", speech: "Conversation Setup", grammar: "Grammar Setup"}
 
   useEffect(() => {
     const newSettings = {
@@ -52,6 +53,15 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
     "Travel",
   ];
 
+    const convoType = [
+      "Presentation/Formal speech",
+      "Casual conversation",
+      "Storytelling",
+      "Debate/Argument",
+      "Interview responses",
+      "Impromptu speaking",
+    ];
+
   function loadConjugations() {
     if(gameType == "grammar"){
     axios
@@ -84,7 +94,9 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
   return (
     <>
       <aside className="h-screen p-4 bg-[rgb(55,75,90)] space-y-2 max-w-xs">
-        <h2 className="font-bold text-3xl text-[#f8f9fa]">Reading Setup</h2>
+        <h2 className="font-bold text-3xl text-[#f8f9fa] whitespace-nowrap">
+          {controlTitle[gameType]}
+        </h2>
 
         {gameType == "grammar" && (
           <div>
@@ -145,6 +157,32 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
           </>
         )}
 
+        {gameType == "speech" && (
+          <>
+
+            <div>
+              <label className="text-xl text-[#bdc3c7] font-bold ">
+                Topic:{" "}
+              </label>
+
+              <div className="flex-col space-y-2 mt-2">
+                <select
+                  id="tense"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
+                >
+                  {convoType.map((topic, index) => (
+                    <option key={index} value={topic}>
+                      {topic}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </>
+        )}
+
         <label className="text-xl text-[#bdc3c7] font-bold ">
           Difficulty:{" "}
         </label>
@@ -162,45 +200,51 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
           </select>
         </div>
 
-        <label className="text-xl text-[#bdc3c7] font-bold">Questions: </label>
-        <div className="flex gap-3 mt-2 text-center">
-          <button
-            className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
+        {gameType != "speech" && (
+          <>
+            <label className="text-xl text-[#bdc3c7] font-bold">
+              Questions:{" "}
+            </label>
+            <div className="flex gap-3 mt-2 text-center">
+              <button
+                className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
             ${
               numQuestions == parseInt(questionOptions[gameType][0])
                 ? "bg-[#e67e22]"
                 : "bg-[#f39c12] hover:bg-[#e67e22]"
             }`}
-            value={parseInt(questionOptions[gameType][0])}
-            onClick={(e) => setNumQuestions(e.target.value)}
-          >
-            {questionOptions[gameType][0]}
-          </button>
-          <button
-            className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
+                value={parseInt(questionOptions[gameType][0])}
+                onClick={(e) => setNumQuestions(e.target.value)}
+              >
+                {questionOptions[gameType][0]}
+              </button>
+              <button
+                className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
               ${
                 numQuestions == parseInt(questionOptions[gameType][1])
                   ? "bg-[#e67e22]"
                   : "bg-[#f39c12] hover:bg-[#e67e22]"
               }`}
-            value={parseInt(questionOptions[gameType][1])}
-            onClick={(e) => setNumQuestions(e.target.value)}
-          >
-            {questionOptions[gameType][1]}
-          </button>
-          <button
-            className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
+                value={parseInt(questionOptions[gameType][1])}
+                onClick={(e) => setNumQuestions(e.target.value)}
+              >
+                {questionOptions[gameType][1]}
+              </button>
+              <button
+                className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
               ${
                 numQuestions == parseInt(questionOptions[gameType][2])
                   ? "bg-[#e67e22]"
                   : "bg-[#f39c12] hover:bg-[#e67e22]"
               }`}
-            value={parseInt(questionOptions[gameType][2])}
-            onClick={(e) => setNumQuestions(e.target.value)}
-          >
-            {questionOptions[gameType][2]}
-          </button>
-        </div>
+                value={parseInt(questionOptions[gameType][2])}
+                onClick={(e) => setNumQuestions(e.target.value)}
+              >
+                {questionOptions[gameType][2]}
+              </button>
+            </div>{" "}
+          </>
+        )}
 
         <button
           className="rounded-md px-6 py-4 bg-[#3498db] mt-4 text-white font-bold text-center hover:bg-[#2980b9] w-full max-w-xs"
