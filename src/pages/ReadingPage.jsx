@@ -9,46 +9,41 @@ export default function ReadingPage() {
     
 
     const [readingData, setReadingData] = useState({});
-    const [userResponses, setUserResponses] = useState({});
+    const [userAnswers, setUserAnswers] = useState({});
+    const [booleanResponses, setBooleanResponses] = useState([]);
     const [results, setResults] = useState({});
 
-    console.log(readingData.content)
+    let correctAnswers;
+    if(readingData.questions?.length > 0){
+      correctAnswers = {
+        ...readingData.questions.map((item) => item.correct)
+      };
+    }
+
+    
+    
 
     const checkResponses = (responses) => {
       const results = []
-      readingData.questions.map((question, index) => {
-        results.push
-      })
-      console.log(results)
+      for (const [key, value] of Object.entries(userAnswers)) {
+        results.push(correctAnswers[key] === value);
+      }
       setBooleanResponses(results)
+    
       
     }
 
     const getScore = () => {
       let count = 0
-      for(let i = 0; i < conjugations.length; ++i){
+      for(let i = 0; i < readingData.questions?.length; ++i){
         if(booleanResponses[i]){
           count += 1
         }
       }
-      return (count / conjugations.length) * 100}
+      return (count / creadingData.questions?.length) * 100;}
 
 
 
-
-
-    function handleResponse(){
-        const result = {}
-        for(let i = 0; i < readingData.questions.length; i++){
-            result[i] = {
-                isCorrect: readingData.questions[i].answer === userResponses[i],
-                userResponse: userResponses[i],
-                correctResponse: readingData.questions[i].answer
-            };
-        }
-        setResults(result);
-
-    }
 
     function borderColor(index) {
         if (results[index] && results[index].isCorrect) {
@@ -65,7 +60,7 @@ export default function ReadingPage() {
             <NavigationMenu></NavigationMenu>
 
             <div className="flex gap-4 bg-slate-300 ">
-              <Controls gameType={"reading"} readingHandler={setReadingData}/>
+              <Controls gameType={"reading"} readingHandler={setReadingData} />
 
               <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
                 <PageCard
@@ -97,6 +92,13 @@ export default function ReadingPage() {
                       {readingData.questions.map((question, index) => (
                         <div
                           className=" p-4 bg-white border-2 border-[#dee2e6] rounded-md m-2"
+                          style={{
+                            borderColor:
+                              booleanResponses[index] &&
+                              booleanResponses?.length > 0
+                                ? "green"
+                                : "red",
+                          }}
                           key={index}
                         >
                           <h2 className="font-bold text-2xl mb-1 text-[#2c3e50]">
@@ -115,8 +117,14 @@ export default function ReadingPage() {
                                   <input
                                     type="radio"
                                     name={`question-${index}`}
-                                    value={text}
+                                    value={letter}
                                     className="px-4 ml-2"
+                                    onChange={() =>
+                                      setUserAnswers({
+                                        ...userAnswers,
+                                        [index]: letter,
+                                      })
+                                    }
                                   />
                                   {" " + letter}. {text}
                                 </label>
