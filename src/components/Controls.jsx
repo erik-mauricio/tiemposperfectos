@@ -2,12 +2,14 @@ import axios from "axios";
 import { useState, useEffect, use } from "react";
 import { useDebounce } from "use-debounce";
 
-export default function Controls({ gameType, conjugationsHandler, gameSettings}) {
-  const [difficulty, setDifficulty] = useState("beginner");
+export default function Controls({ gameType, conjugationsHandler, readingHandler, gameSettings}) {
+  const [difficulty, setDifficulty] = useState("Beginner");
   const [numQuestions, setNumQuestions] = useState(5);
-  const [tense, setTense] = useState("presente");
+  const [tense, setTense] = useState("Presente");
   const [topic, setTopic] = useState("")
   const [settings, setSettings] = useState({})
+
+  const [liveSearchText, setLiveSearchText] = useState("")
 
 
   useEffect(() => {
@@ -17,7 +19,10 @@ export default function Controls({ gameType, conjugationsHandler, gameSettings})
       tense: tense
     };
     setSettings(newSettings)
-    gameSettings(newSettings);
+    if(gameType == "grammar"){
+      gameSettings(newSettings);
+    }
+  
   }, [difficulty, numQuestions, tense, topic]);
 
   const questionOptions = {
@@ -32,32 +37,23 @@ export default function Controls({ gameType, conjugationsHandler, gameSettings})
     speech: "New Conversation",
   };
 
-  const verbTenses = ["presente", "imperfecto"];
+  const verbTenses = ["Presente", "Imperfecto"];
 
   const topics = [
-    "Cultura",
-    "Historia",
-    "Comida",
-    "Geografía",
-    "Arte",
-    "Música",
-    "Literatura",
-    "Fiestas",
-    "Tecnología",
-    "Cine",
-    "Vida cotidiana",
-    "Deportes",
-    "Educación",
-    "Viajes",
-    "Naturaleza",
-    "Política",
-    "Economía",
-    "Religión",
-    "Costumbres",
-    "Ciencia",
+    "Animals",
+    "Culture",
+    "Food",
+    "Health",
+    "History",
+    "Nature",
+    "People",
+    "Science",
+    "Sports",
+    "Travel",
   ];
 
   function loadConjugations() {
+    if(gameType == "grammar"){
     axios
       .get("http://localhost:8080/conjugations", {
         params: {
@@ -68,7 +64,21 @@ export default function Controls({ gameType, conjugationsHandler, gameSettings})
       })
       .then((res) => {
         conjugationsHandler(res.data);
-      });
+      });}
+      else if (gameType == "reading"){
+        axios
+          .get("http://localhost:8080/reading", {
+            params: {
+              difficulty: difficulty,
+              topic: topic,
+              q: liveSearchText,
+            },
+          })
+          .then((res) => {
+            readingHandler(res.data);
+          });
+
+      }
   }
 
   return (
@@ -109,6 +119,7 @@ export default function Controls({ gameType, conjugationsHandler, gameSettings})
               <input
                 type="text"
                 className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold"
+                placeholder="type"
               ></input>
             </div>
             <div>
@@ -145,7 +156,7 @@ export default function Controls({ gameType, conjugationsHandler, gameSettings})
             onChange={(e) => setDifficulty(e.target.value)}
             className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
           >
-            <option value="beginner">Beginner</option>
+            <option value="Beginner">Beginner</option>
             <option value="Intermediate">Intermediate</option>
             <option value="Advanced">Advanced</option>
           </select>

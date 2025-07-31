@@ -32,11 +32,9 @@ Endpoint queries conjugations collection filters by user difficulty and tense
 */
 app.get('/conjugations', async (req, res) => {
     const difficulty = req.query.difficulty;
-    console.log(difficulty)
     const numberQuestions = parseInt(req.query.numberQuestions);
-    console.log(numberQuestions);
     const tense = req.query.tense;
-    console.log(tense);
+
 
 
     let filter = {};
@@ -61,19 +59,28 @@ app.get('/conjugations', async (req, res) => {
 });
 
 app.get('/reading', async (req, res) => {
-    const difficulty = req.query.difficulty
+    console.log("hi")
+    const difficulty = req.query.difficulty;
     console.log(difficulty)
+    const liveText = req.query.q
+    const topic = req.query.topic
+    console.log(topic);
 
 
     let filter = {}
     if (difficulty) {
         filter.difficulty = difficulty;
     }
+    if(topic){
+        filter.topic = topic
+    }
+    if(liveText){
+        filter.$text = {$search: liveText}
+    }
 
-    const readings = await db.collection('readings')
+    const readings = await db.collection('passages')
         .findOne(filter)
     console.log(readings)
-
     res.status(200).json(readings);
 });
 

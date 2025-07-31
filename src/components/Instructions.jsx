@@ -1,4 +1,4 @@
-export default function Instructions({children, title, text, titleColor, isSpeech}){
+export default function Instructions({children, title, text, titleColor, gameType}){
 
    
     return (
@@ -11,20 +11,13 @@ export default function Instructions({children, title, text, titleColor, isSpeec
         </h2>
 
         <div className="p-4  bg-[#f8f9fa]">
-          <h2 className="font-semibold">Instructions</h2>
-          <p>{text}</p>
+          <p className="text-xl">{text}</p>
         </div>
 
         <div className="p-3">{children}</div>
 
         <div className="justify-center flex gap-2 ">
-          {!isSpeech && (
-            <>
-        
-
-              
-            </>
-          )}
+          
         </div>
       </div>
     );

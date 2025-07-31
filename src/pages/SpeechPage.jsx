@@ -36,6 +36,15 @@ export default function SpeechPage() {
     },
   ];
 
+  const convoType = [
+    "Presentation/Formal speech",
+    "Casual conversation",
+    "Storytelling",
+    "Debate/Argument",
+    "Interview responses",
+    "Impromptu speaking",
+  ];
+
     return (
       <>
         <NavigationMenu />
@@ -66,7 +75,7 @@ export default function SpeechPage() {
               title={"Live Conversation Practice"}
               titleColor={"oklch(70.2% 0.183 293.541)"}
               text={"hi"}
-              isSpeech={true}
+              gameType={"speech"}
             >
               <div className="space-y-2 flex-col justify-between">
                 {messages.length > 0 &&
