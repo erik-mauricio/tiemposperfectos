@@ -2,13 +2,66 @@ import express from 'express';
 import cors from 'cors';
 import {MongoClient, ObjectId} from 'mongodb';
 import dotenv from 'dotenv';
+import { createServer } from "http"; 
+import { Server } from "socket.io";
+import OpenAI from "openai";
+
 dotenv.config();
 
 
 const port = process.env.PORT || 8080;
 const app = express();
+const apiKey = process.env.OPEN_AI_KEY;
 app.use(cors());
 app.use(express.json());
+const server = createServer(app);
+const openAi = new OpenAI(apiKey);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173", 
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on('connection', (socket) => {
+    console.log('User connected:', socket.id);
+    
+    
+    socket.on('start-conversation', async (data) => {
+        const session = new Conversation({
+          sessionId: generateUniqueId(),
+          userId: data.userId || "temp_user_" + Math.random().toString(36),
+          prompt: data.selectedPrompt,
+          currentTurn: 1,
+          maxTurns: 5,
+          messages: [],
+          status: "active",
+          createdAt: new Date(),
+        });
+
+        // 2. Save to database
+        await session.save();
+      // Generate AI opening message
+      // Send back to client
+    });
+    
+    // Handle student responses
+    socket.on('student-response', async (data) => {
+      // Process student input
+      // Generate AI reply
+      // Update conversation in DB
+      // Send AI response back
+    });
+    
+    // End conversation
+    socket.on('end-conversation', async (data) => {
+      // Mark conversation as complete
+      // Send summary/feedback
+    });
+  });
+
+
 
 
 
@@ -85,38 +138,29 @@ app.get('/reading', async (req, res) => {
 });
 
 
-app.post('/generate-prompt', async (req, res) => {
-    const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-            { role: "user",
-                content: "Write a Spanish conversation topic for learners." }
-        ]
-    });
-    console.log(response.choices[0].message.content);
-    res.status(200).json({prompt: response.choices[0].message.content});
-});
 
+app.get("/speech-prompt",  async (req, res) => {
+    console.log("=== ROUTE HIT ===");
+    console.log("Query params:", req.query);
 
-app.post('/AI-speak', async (req, res) => {
-    const text = req.body.text;
-    const topic = req.body.topic;
+    const difficulty = req.query.difficulty;
+    console.log("Difficulty:", difficulty);
 
-    let isFirst = false;
-    if(text === undefined){
-        isFirst = true;
+    const topic = req.query.topic;
+    console.log("Topic:", topic);
+    let filter = {};
+    if (difficulty) {
+      filter.difficulty = difficulty;
     }
+    if (topic) {
+      filter.topic = topic;
+    }
+    const prompt = await db.collection("prompts").findOne(filter)
+    console.log(prompt)
+    res.status(200).json(prompt)
 
-    const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-            { role: "user",
-                content: "Write a Spanish conversation topic for learners." }
-        ]
-    });
-    console.log(response.choices[0].message.content);
-    res.status(200).json({prompt: response.choices[0].message.content});
 });
+
 
 
 // --- Change nothing below this line ---
@@ -133,15 +177,18 @@ app.use((err, req, res, next) => {
 });
 
 // start server on port
-const server = app.listen(port, () => {
-    console.log(`app listening on http://localhost:${port}/`);
+server.listen(port, () => {
+  console.log(`app listening on http://localhost:${port}/`);
 });
-server.on('error', (error) => {
-    if (error.code === 'EADDRINUSE') {
-        console.error(`error: port ${port} is already in use!`, 'kill this server! (control + c)');
-        process.exit(1);
-    } else {
-        console.error('Server error:', error);
-    }
+
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.error(
+      `error: port ${port} is already in use!`,
+      "kill this server! (control + c)"
+    );
+    process.exit(1);
+  } else {
+    console.error("Server error:", error);
+  }
 });
-// Add these endpoints to your server.mjs file

@@ -1,4 +1,4 @@
-export default function Score({}){
+export default function Score({settings, score}){
     return (
       <div className="rounded-md border-2 bg-white p-2 flex justify-between border-[#e9ecef]">
         <div>

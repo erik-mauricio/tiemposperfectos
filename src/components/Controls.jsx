@@ -2,11 +2,11 @@ import axios from "axios";
 import { useState, useEffect, use } from "react";
 import { useDebounce } from "use-debounce";
 
-export default function Controls({ gameType, conjugationsHandler, readingHandler, gameSettings}) {
+export default function Controls({ gameType, conjugationsHandler, readingHandler, gameSettings, handlePrompt}) {
   const [difficulty, setDifficulty] = useState("Beginner");
   const [numQuestions, setNumQuestions] = useState(5);
   const [tense, setTense] = useState("Presente");
-  const [topic, setTopic] = useState("")
+  const [topic, setTopic] = useState("Presentation Formal Speech")
   const [settings, setSettings] = useState({})
 
   const [liveSearchText, setLiveSearchText] = useState("")
@@ -35,7 +35,7 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
   const btnText = {
     reading: "New Passage",
     grammar: "New Questions",
-    speech: "New Conversation",
+    speech: "New Prompt",
   };
 
   const verbTenses = ["Presente", "Imperfecto"];
@@ -54,7 +54,7 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
   ];
 
     const convoType = [
-      "Presentation/Formal speech",
+      "Presentation Formal speech",
       "Casual conversation",
       "Storytelling",
       "Debate/Argument",
@@ -88,6 +88,15 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
             readingHandler(res.data);
           });
 
+      } else if (gameType == "speech"){
+        axios.get("http://localhost:8080/speech-prompt", {
+          params: {
+            difficulty: difficulty,
+            topic: topic
+          }
+        }).then((res) => {
+          handlePrompt(res.data);
+        });
       }
   }
 

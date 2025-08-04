@@ -10,11 +10,20 @@ import Controls from "../components/Controls.jsx";
 import Instructions from "../components/Instructions.jsx";
 import WelcomeText from "../components/WelcomeText.jsx";
 import PageCard from "../components/PageCard.jsx";
+import { io } from "socket.io-client";
 
 
 export default function SpeechPage() {
 
-  const messages = [
+  const [messages, setMessages] = useState([])
+  const [prompt, setPrompt] = useState("")
+
+  const socket = io("http://localhost:8080")
+  socket.on('connect', () => {
+    displayMessag
+  })
+
+  /* const messages = [
     {
       id: 1,
       type: "ai",
@@ -34,16 +43,14 @@ export default function SpeechPage() {
       content: "¡Perfecto! Usaste el presente perfecto correctamente...",
       timestamp: "2:35 PM",
     },
-  ];
-
-
+  ]; */
 
     return (
       <>
         <NavigationMenu />
 
         <div className="flex gap-4 bg-slate-300 ">
-          <Controls gameType="speech" />
+          <Controls gameType="speech" handlePrompt={setPrompt}/>
 
           <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
             <PageCard
@@ -67,7 +74,7 @@ export default function SpeechPage() {
             <Instructions
               title={"Live Conversation Practice"}
               titleColor={"oklch(70.2% 0.183 293.541)"}
-              text={"hi"}
+              text={prompt.title}
               gameType={"speech"}
             >
               <div className="space-y-2 flex-col justify-between">

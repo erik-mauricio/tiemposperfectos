@@ -746,3 +746,965 @@ El sueño juega un papel crucial en la consolidación de la memoria. Durante el 
     ],
   },
 ]);
+
+db.prompts.drop();
+db.createCollection("prompts");
+
+db.prompts.insertMany([
+  // Presentation Formal Speech - Beginner
+  {
+    title: "Introduce yourself and your background to a small group",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Present your favorite hobby for 2 minutes",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Explain a simple process you do daily",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe your dream job to colleagues",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Present a book recommendation to friends",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Explain why you chose your career path",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Give a brief tour of your workspace",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Present a simple how-to guide",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Introduce a guest speaker at a small event",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Explain the benefits of a healthy habit",
+    topic: "Presentation Formal Speech",
+    difficulty: "Beginner",
+  },
+
+  // Presentation Formal Speech - Intermediate
+  {
+    title: "Deliver a 5-minute presentation on the impact of AI in education",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Present quarterly sales results to your team",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Give a product demo to potential clients",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Present your research findings to colleagues",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Deliver a training session on a new company policy",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Present a project proposal to management",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Give a presentation on industry trends",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Present budget recommendations to stakeholders",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Deliver a status update on a major initiative",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Present solutions to a business problem",
+    topic: "Presentation Formal Speech",
+    difficulty: "Intermediate",
+  },
+
+  // Presentation Formal Speech - Advanced
+  {
+    title:
+      "Deliver a keynote speech about sustainable business practices at a conference",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Present to a board of directors about strategic direction",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Give a TED-style talk on the future of remote work",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Present your business plan to venture capitalists",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Deliver a graduation commencement address",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Present complex research findings to a scientific committee",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Give an investor pitch for a startup",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Deliver a crisis communication address to stakeholders",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Present at an international conference to industry experts",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Give a thought leadership presentation to C-suite executives",
+    topic: "Presentation Formal Speech",
+    difficulty: "Advanced",
+  },
+
+  // Casual Conversation - Beginner
+  {
+    title: "Introduce yourself to a new neighbor",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Talk about the weather with a cashier",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Ask for directions from a stranger",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Discuss your pets with other pet owners",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Talk about your commute with coworkers",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Share what you did last weekend",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Discuss your favorite local restaurant",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Talk about a recent movie you watched",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Ask about someone's day",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Discuss seasonal activities and holidays",
+    topic: "Casual Conversation",
+    difficulty: "Beginner",
+  },
+
+  // Casual Conversation - Intermediate
+  {
+    title: "Discuss your weekend plans with colleagues",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Share your thoughts on current technology trends",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Talk about travel experiences and dream destinations",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Discuss your hobbies and interests at a social gathering",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Share cooking tips and favorite recipes",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Talk about books you've recently read",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Discuss fitness routines and health goals",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Chat about local events and community news",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Share opinions on popular TV shows or podcasts",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Discuss career goals and professional development",
+    topic: "Casual Conversation",
+    difficulty: "Intermediate",
+  },
+
+  // Casual Conversation - Advanced
+  {
+    title: "Engage in nuanced discussions about current events",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Debate complex social or political topics respectfully",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Discuss philosophical questions about life and meaning",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Navigate sensitive conversations about personal beliefs",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Engage in deep conversations about relationships and family",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Discuss complex financial or investment strategies",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Talk about advanced technical concepts in your field",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Engage in cultural discussions about art, literature, or music",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Discuss ethical dilemmas and moral questions",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Navigate difficult conversations about personal conflicts",
+    topic: "Casual Conversation",
+    difficulty: "Advanced",
+  },
+
+  // Storytelling - Beginner
+  {
+    title: "Tell about your first day at a new job or school",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe a funny thing your pet did",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Share a story about getting lost",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Tell about a time you tried something new",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe your best birthday ever",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Share a story about meeting someone famous",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Tell about a time you were really surprised",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe a memorable meal you had",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Share a story about bad weather",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Tell about learning to drive or ride a bike",
+    topic: "Storytelling",
+    difficulty: "Beginner",
+  },
+
+  // Storytelling - Intermediate
+  {
+    title: "Tell the story of your most embarrassing moment",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Share a childhood memory that shaped who you are",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Narrate a travel experience that didn't go as planned",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Tell about a time when you overcame a fear",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Share the story of how you met your best friend",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Narrate a moment when you had to be brave",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Tell a family story that gets told at every gathering",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Share about a time you learned an important lesson",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Narrate an experience that changed your perspective",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Tell about a time you helped someone in need",
+    topic: "Storytelling",
+    difficulty: "Intermediate",
+  },
+
+  // Storytelling - Advanced
+  {
+    title: "Narrate a complex life experience with multiple turning points",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Tell a story that weaves together multiple timelines",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Share a deeply personal story of transformation",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Narrate a story with moral complexity and ambiguity",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Tell a story that incorporates dialogue and character development",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Share a story that builds suspense and has a surprising twist",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Narrate a story that connects personal experience to universal themes",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Tell a story using vivid sensory details and metaphors",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Share a story that demonstrates cause and effect over time",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Narrate a story that reveals character through actions and choices",
+    topic: "Storytelling",
+    difficulty: "Advanced",
+  },
+
+  // Debate Argument - Beginner
+  {
+    title: "Should school uniforms be mandatory?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Is it better to read books or watch movies?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Should pets be allowed in all public places?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Is online shopping better than in-store shopping?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Should students get longer summer breaks?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Is it better to live in the city or the country?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Should everyone learn to cook?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Is social media more helpful or harmful for teens?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Should tipping at restaurants be mandatory?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Is it better to exercise in the morning or evening?",
+    topic: "Debate Argument",
+    difficulty: "Beginner",
+  },
+
+  // Debate Argument - Intermediate
+  {
+    title: "Should remote work be the default for office jobs?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title:
+      "Is artificial intelligence more beneficial or dangerous to society?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Should college education be free for everyone?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Are electric vehicles ready to replace gas cars?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Should social media platforms be regulated by government?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Is renewable energy feasible as our primary power source?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Should there be limits on CEO compensation?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Is the gig economy good or bad for workers?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Should genetic engineering be used to enhance human abilities?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Are standardized tests an effective measure of education?",
+    topic: "Debate Argument",
+    difficulty: "Intermediate",
+  },
+
+  // Debate Argument - Advanced
+  {
+    title:
+      "Should artificial general intelligence development be paused globally?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Is universal basic income a solution to technological unemployment?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Should we prioritize Mars colonization over Earth's climate crisis?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Is privacy a fundamental right in the age of big data?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Should democratic governments be able to override individual rights for collective good?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Is economic growth compatible with environmental sustainability?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Should human enhancement technologies be regulated or freely available?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Is globalization ultimately beneficial or harmful to developing nations?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Should we use geoengineering to combat climate change?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Is moral relativism or moral absolutism more defensible?",
+    topic: "Debate Argument",
+    difficulty: "Advanced",
+  },
+
+  // Interview Responses - Beginner
+  {
+    title: "Tell me about yourself",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Why are you interested in this job?",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What are your hobbies outside of work?",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe your ideal work environment",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What motivates you to come to work each day?",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "How do you like to spend your free time?",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What subjects did you enjoy most in school?",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe a typical day in your current/last job",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What are you looking for in your next role?",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+  {
+    title: "How did you hear about this position?",
+    topic: "Interview Responses",
+    difficulty: "Beginner",
+  },
+
+  // Interview Responses - Intermediate
+  {
+    title: "What are your greatest strengths and weaknesses?",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Describe a time when you had to work under pressure",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Tell me about a challenge you overcame at work",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "How do you handle constructive criticism?",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Where do you see yourself in five years?",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Describe a time you disagreed with your supervisor",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "What's your approach to working in a team?",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Tell me about a project you're particularly proud of",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "How do you prioritize multiple tasks and deadlines?",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Describe a time you had to learn something new quickly",
+    topic: "Interview Responses",
+    difficulty: "Intermediate",
+  },
+
+  // Interview Responses - Advanced
+  {
+    title:
+      "Describe a time you had to lead through significant organizational change",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "How would you handle a situation where you had to fire an underperforming employee?",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Tell me about a time you made a decision with incomplete information",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Describe your approach to managing conflict between team members",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "How do you balance competing priorities from different stakeholders?",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Tell me about a time you failed and what you learned from it",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title: "How would you approach entering a new market with our product?",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title: "Describe your leadership philosophy and give specific examples",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title: "How do you measure success and ensure accountability in your team?",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "Tell me about a time you had to influence someone without direct authority",
+    topic: "Interview Responses",
+    difficulty: "Advanced",
+  },
+
+  // Impromptu Speaking - Beginner
+  {
+    title: "What's your favorite season and why?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "If you could have any superpower, what would it be?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe your perfect weekend",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What's the best gift you've ever received?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "If you could visit any place in the world, where would you go?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What was your favorite subject in school?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "Describe your dream house",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What's your favorite way to relax?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "If you could meet any celebrity, who would it be?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+  {
+    title: "What's the most useful thing you own?",
+    topic: "Impromptu Speaking",
+    difficulty: "Beginner",
+  },
+
+  // Impromptu Speaking - Intermediate
+  {
+    title:
+      "If you could have dinner with any historical figure, who would it be and why?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "What would you do if you won the lottery tomorrow?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "If you could change one thing about your city, what would it be?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "What advice would you give to your 18-year-old self?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "If you could master any skill instantly, what would you choose?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "What's the most important lesson you've learned from failure?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "Describe what leadership means to you",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "If you could solve one world problem, which would you choose?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "What does success mean to you personally?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+  {
+    title: "If you could start any business, what would it be?",
+    topic: "Impromptu Speaking",
+    difficulty: "Intermediate",
+  },
+
+  // Impromptu Speaking - Advanced
+  {
+    title: "How would you redesign the education system from scratch?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "If you were leading a country, what would be your first three policies?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "How do you think human consciousness works and could it be replicated?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title: "What would you do if you discovered you only had one year to live?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title: "How would you convince a skeptic that your biggest belief is true?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "If you could add one amendment to your country's constitution, what would it be?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "How would you solve the balance between individual freedom and collective responsibility?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "What would you do if you had unlimited resources but only 24 hours?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title:
+      "How would you explain the concept of time to someone from a timeless dimension?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+  {
+    title: "If you could redesign human nature, what would you change and why?",
+    topic: "Impromptu Speaking",
+    difficulty: "Advanced",
+  },
+]);
