@@ -4,7 +4,6 @@ import {useState} from "react";
 import OpenAI from "openai";
 import {playAudio} from "openai/helpers/audio"
 import axios from "axios";
-import {Clock} from "../components/Clock.jsx";
 import {useEffect} from "react";
 import Controls from "../components/Controls.jsx";
 import Instructions from "../components/Instructions.jsx";
@@ -16,12 +15,68 @@ import { io } from "socket.io-client";
 export default function SpeechPage() {
 
   const [messages, setMessages] = useState([])
+  const [settings, setSettings] = useState({})
   const [prompt, setPrompt] = useState("")
+  const [isRecording, setIsRecording] = useState(false)
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false)
+  const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const [isTimerOn, setIsTimerOn] = useState(false)
+  const [time, setTime] = useState(20)
+  console.log(settings)
 
-  const socket = io("http://localhost:8080")
-  socket.on('connect', () => {
-    displayMessag
-  })
+
+  const socket = io("http://localhost:8080");
+
+
+  const beginRecording = () => {
+    setSettings({...settings, prompt: prompt})
+    socket.emit('start-conversation', prompt);
+  }
+
+  socket.on("conversation-started", async (data) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "es-MX"; 
+    speechSynthesis.speak(utterance);
+
+    setMessages([...messages, {id: 1, type: "ai", content: data.text}] )
+  });
+
+  const studentSpeaking = () => {
+    ///web sppech api and get text
+
+
+    let studentText;
+
+    socket.emit("student-response", studentText);
+  }
+
+  socket.on("ai-response", async (data) => {
+    //call function so AI speaks
+
+  } );
+
+ 
+
+
+  socket.on("conversation-ended", );
+
+  
+  useEffect(() => {
+    if (!isTimerOn) return;
+
+    const interval = setInterval(() => {
+      setTime((prev) => {
+        if (prev <= 1) {
+          setIsTimerOn(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTimerOn]);
+
 
   /* const messages = [
     {
@@ -50,7 +105,7 @@ export default function SpeechPage() {
         <NavigationMenu />
 
         <div className="flex gap-4 bg-slate-300 ">
-          <Controls gameType="speech" handlePrompt={setPrompt}/>
+          <Controls gameType="speech" handlePrompt={setPrompt} gameSettings={setSettings}/>
 
           <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
             <PageCard
@@ -111,11 +166,14 @@ export default function SpeechPage() {
               <div className="flex-col justify-items-center mt-2 ">
                 <div className="flex-col p-5 border-2 rounded-lg justify-items-center max-w-150 min-w-100 border-purple-500 align-middle space-y-2">
                   <h3 className="block w-40 h-40 rounded-full bg-purple-400 text-center font-bold text-6xl p-12">
-                    3
+                    {time}
                   </h3>
                   <p>Seconds to respond</p>
 
-                  <button className="block rounded-lg bg-purple-300 p-2 font-bold text-2xl text-center hover:bg-purple-400">
+                  <button
+                    className="block rounded-lg bg-purple-300 p-2 font-bold text-2xl text-center hover:bg-purple-400"
+                    onClick={() => setIsRecording(!isRecording)}
+                  >
                     Start Recording
                   </button>
                 </div>

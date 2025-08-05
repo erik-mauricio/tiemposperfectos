@@ -14,15 +14,22 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
   const controlTitle = {reading: "Reading Setup", speech: "Conversation Setup", grammar: "Grammar Setup"}
 
   useEffect(() => {
-    const newSettings = {
-      difficulty: difficulty,
-      numQs: numQuestions,
-      tense: tense
-    };
-    setSettings(newSettings)
-    if(gameType == "grammar"){
-      gameSettings(newSettings);
+    if(gameType === "grammar"){
+      const newSettings = {
+        difficulty: difficulty,
+        numQs: numQuestions,
+        tense: tense,
+      };
+      gameSettings(newSettings)
+    } else if(gameType === "speech") {
+      const newSettings = {
+        difficulty: difficulty,
+        topic: topic
+      };
+      gameSettings(newSettings)
+
     }
+    
   
   }, [difficulty, numQuestions, tense, topic]);
 

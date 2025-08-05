@@ -26,12 +26,11 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
-    
-    
+
     socket.on('start-conversation', async (data) => {
         const session = new Conversation({
           sessionId: generateUniqueId(),
-          userId: data.userId || "temp_user_" + Math.random().toString(36),
+          userId: "temp_user_" + Math.random().toString(36),
           prompt: data.selectedPrompt,
           currentTurn: 1,
           maxTurns: 5,
@@ -40,24 +39,106 @@ io.on('connection', (socket) => {
           createdAt: new Date(),
         });
 
-        // 2. Save to database
+        socket.sessionId = session.sessionId;
+      
         await session.save();
-      // Generate AI opening message
-      // Send back to client
+
+        const aiOpening = await openAi.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: `You are helping a student practice speaking about: "${data.selectedPrompt.text}". Start the conversation by introducing the topic and asking an engaging question. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
+            },
+            {
+              role: "user",
+              content: "Begin",
+            },
+          ],
+        });
+
+        session.messages.push({
+          speaker: "ai",
+          message: aiOpening,
+          turnNumber: 1,
+          timestamp: new Date(),
+        });
+        await session.save();
+
+
+        socket.emit("conversation-started", {
+          sessionId: session.sessionId,
+          aiMessage: aiOpening,
+          turnNumber: 1,
+        });
     });
     
-    // Handle student responses
-    socket.on('student-response', async (data) => {
-      // Process student input
-      // Generate AI reply
-      // Update conversation in DB
-      // Send AI response back
+
+    socket.on("student-response", async (data) => {
+      const session = await Conversation.findOne({
+        sessionId: socket.sessionId,
+      });
+
+
+      session.messages.push({
+        speaker: "student",
+        message: data.message,
+        turnNumber: session.currentTurn,
+        timestamp: new Date(),
+      });
+
+
+      const aiResponse = await generateAIResponse(data.message);
+
+    
+      session.messages.push({
+        speaker: "ai",
+        message: aiResponse,
+        turnNumber: session.currentTurn,
+        timestamp: new Date(),
+      });
+
+
+      session.currentTurn += 1;
+      if (session.currentTurn > session.maxTurns) {
+        session.status = "completed";
+        session.completedAt = new Date();
+      }
+
+      
+      await session.save();
+
+    
+      socket.emit("ai-response", {
+        message: aiResponse,
+        turnNumber: session.currentTurn,
+        isComplete: session.status === "completed",
+      });
     });
     
-    // End conversation
-    socket.on('end-conversation', async (data) => {
-      // Mark conversation as complete
-      // Send summary/feedback
+    socket.on("end-conversation", async (data) => {
+   
+      const session = await Conversation.findOne({
+        sessionId: socket.sessionId,
+      });
+
+ 
+      session.status = "completed";
+      session.completedAt = new Date();
+      await session.save();
+
+
+
+      socket.emit("conversation-ended", {
+        sessionId: session.sessionId,
+        summary: {
+          totalTurns: session.messages.length,
+          duration: session.completedAt - session.createdAt,
+          feedback: "Great job practicing!",
+        },
+      });
+
+     
     });
   });
 
