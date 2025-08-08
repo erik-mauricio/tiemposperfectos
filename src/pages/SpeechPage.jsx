@@ -1,9 +1,6 @@
 import NavigationMenu from "../components/NavigationMenu.jsx";
-import GameSettings from "../components/GameSettings.jsx";
+import { useRef } from "react";
 import {useState} from "react";
-import OpenAI from "openai";
-import {playAudio} from "openai/helpers/audio"
-import axios from "axios";
 import {useEffect} from "react";
 import Controls from "../components/Controls.jsx";
 import Instructions from "../components/Instructions.jsx";
@@ -17,52 +14,128 @@ export default function SpeechPage() {
   const [messages, setMessages] = useState([])
   const [settings, setSettings] = useState({})
   const [prompt, setPrompt] = useState("")
-  const [isRecording, setIsRecording] = useState(false)
-  const [isUserSpeaking, setIsUserSpeaking] = useState(false)
-  const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const sessionIdRef = useRef("");
   const [isTimerOn, setIsTimerOn] = useState(false)
   const [time, setTime] = useState(20)
-  console.log(settings)
+  const recognitionRef = useRef(null);
+
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false)
+
+  console.log(messages)
+
 
 
   const socket = io("http://localhost:8080");
 
-
   const beginRecording = () => {
-    setSettings({...settings, prompt: prompt})
-    socket.emit('start-conversation', prompt);
-  }
+    setSettings({ ...settings, prompt: prompt });
+    socket.emit("start-conversation", settings);
+  };
 
-  socket.on("conversation-started", async (data) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "es-MX"; 
-    speechSynthesis.speak(utterance);
+  const AISpeaking = (text) => {
+    return new Promise((resolve) => {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "es-MX";
 
-    setMessages([...messages, {id: 1, type: "ai", content: data.text}] )
-  });
+      utterance.onend = () => {
+        setTime(20);
+        setIsTimerOn(false)
+        resolve();
+        
+
+      };
+
+      speechSynthesis.speak(utterance);
+    });
+  };
+  
 
   const studentSpeaking = () => {
-    ///web sppech api and get text
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.lang = "es-MX";
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = true;
+
+    let finalTranscript = "";
+
+    recognitionRef.current.onresult = (event) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+        }
+      }
+    };
+
+    recognitionRef.current.onend = () => {
+      if (finalTranscript.trim().length > 1) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            type: "user",
+            content: finalTranscript.trim(),
+          },
+        ]);
+        socket.emit("student-response", {
+          studentMessage: finalTranscript.trim(),
+          sessionId: sessionIdRef.current,
+        });
+      }
+    };
+
+    recognitionRef.current.start();
+    setTime(20);
+    setIsTimerOn(true); 
+  };
 
 
-    let studentText;
+  socket.on("conversation-started", async (data) => {
+    sessionIdRef.current = data.sessionId;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        type: "ai",
+        content: data.aiMessage,
+      },
+    ]);
+    await AISpeaking(data.aiMessage)
+    studentSpeaking()
+  });
 
-    socket.emit("student-response", studentText);
-  }
+
 
   socket.on("ai-response", async (data) => {
-    //call function so AI speaks
-
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        type: "ai",
+        content: data.aiMessage,
+      },
+    ]);
+    await AISpeaking(data.aiMessage);
+    studentSpeaking()
   } );
 
- 
-
-
-  socket.on("conversation-ended", );
+  socket.on("conversation-ended", async(data) => {
+    setIsRecording(false)
+  });
 
   
   useEffect(() => {
     if (!isTimerOn) return;
+
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+
+    
 
     const interval = setInterval(() => {
       setTime((prev) => {
@@ -78,28 +151,7 @@ export default function SpeechPage() {
   }, [isTimerOn]);
 
 
-  /* const messages = [
-    {
-      id: 1,
-      type: "ai",
-      content: "¡Hola! ¿Cómo ha sido tu día?",
-      timestamp: "2:34 PM",
-    },
-    {
-      id: 2,
-      type: "user",
-      content: "Muy bien, he trabajado mucho hoy",
-      timestamp: "2:34 PM",
-      duration: "8s",
-    },
-    {
-      id: 3,
-      type: "ai",
-      content: "¡Perfecto! Usaste el presente perfecto correctamente...",
-      timestamp: "2:35 PM",
-    },
-  ]; */
-
+  
     return (
       <>
         <NavigationMenu />
@@ -125,6 +177,8 @@ export default function SpeechPage() {
                 interactive way to boost your reading and critical thinking — so
                 pick your settings and let’s get reading!`}
             ></WelcomeText>
+
+            
 
             <Instructions
               title={"Live Conversation Practice"}
@@ -172,7 +226,7 @@ export default function SpeechPage() {
 
                   <button
                     className="block rounded-lg bg-purple-300 p-2 font-bold text-2xl text-center hover:bg-purple-400"
-                    onClick={() => setIsRecording(!isRecording)}
+                    onClick={() => beginRecording()}
                   >
                     Start Recording
                   </button>

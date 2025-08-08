@@ -4,6 +4,8 @@ import Controls from "../components/Controls.jsx";
 import PageCard from "../components/PageCard.jsx";
 import WelcomeText from "../components/WelcomeText.jsx";
 import Instructions from "../components/Instructions.jsx";
+import Score from "../components/Score.jsx"
+import { set } from "mongoose";
 
 export default function ReadingPage() {
     
@@ -11,7 +13,8 @@ export default function ReadingPage() {
     const [readingData, setReadingData] = useState({});
     const [userAnswers, setUserAnswers] = useState({});
     const [booleanResponses, setBooleanResponses] = useState([]);
-    const [results, setResults] = useState({});
+    const [score, setScore] = useState(0);
+    const [settings, setSettings] = useState({})
 
     let correctAnswers;
     if(readingData.questions?.length > 0){
@@ -24,43 +27,28 @@ export default function ReadingPage() {
     
 
     const checkResponses = (responses) => {
+      if (readingData.questions?.length == 0){
+        setScore(0)
+      }
       const results = []
       for (const [key, value] of Object.entries(userAnswers)) {
         results.push(correctAnswers[key] === value);
       }
       setBooleanResponses(results)
+
+      const totalQs = readingData.questions?.length;
+      const count = results.filter(Boolean).length;
+      setScore((count / totalQs) * 100);
     
-      
     }
 
-    const getScore = () => {
-      let count = 0
-      for(let i = 0; i < readingData.questions?.length; ++i){
-        if(booleanResponses[i]){
-          count += 1
-        }
-      }
-      return (count / creadingData.questions?.length) * 100;}
-
-
-
-
-    function borderColor(index) {
-        if (results[index] && results[index].isCorrect) {
-            return "border-green-400";
-        } else if (results[index] && !results[index].isCorrect) {
-            return "border-red-500";
-        } else {
-            return "border-black";
-        }
-    }
 
         return (
           <>
             <NavigationMenu></NavigationMenu>
 
             <div className="flex gap-4 bg-slate-300 ">
-              <Controls gameType={"reading"} readingHandler={setReadingData} />
+              <Controls gameType={"reading"} readingHandler={setReadingData} gameSettings={setSettings}/>
 
               <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
                 <PageCard
@@ -81,6 +69,8 @@ export default function ReadingPage() {
                     let’s get reading!`}
                 ></WelcomeText>
 
+                <Score settings={settings} scoreColor={"oklch(70.7% 0.165 254.624)"} score={score}></Score>
+
                 <Instructions
                   title={"Reading Passage"}
                   text={readingData.content}
@@ -97,7 +87,7 @@ export default function ReadingPage() {
                               booleanResponses[index] &&
                               booleanResponses?.length > 0
                                 ? "green"
-                                : "red",
+                                : "blue",
                           }}
                           key={index}
                         >

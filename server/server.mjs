@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import { createServer } from "http"; 
 import { Server } from "socket.io";
 import OpenAI from "openai";
+import Conversation from "./models/Conversation.js";
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 
@@ -15,7 +17,13 @@ const apiKey = process.env.OPEN_AI_KEY;
 app.use(cors());
 app.use(express.json());
 const server = createServer(app);
-const openAi = new OpenAI(apiKey);
+const openai = new OpenAI({
+  apiKey: process.env.OPEN_AI_KEY,
+});
+
+const client = new MongoClient("mongodb://localhost:27017");
+const conn = await client.connect();
+const db = conn.db("app");
 
 const io = new Server(server, {
   cors: {
@@ -24,31 +32,30 @@ const io = new Server(server, {
   },
 });
 
+
+
+
 io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
 
     socket.on('start-conversation', async (data) => {
         const session = new Conversation({
-          sessionId: generateUniqueId(),
+          sessionId: uuidv4(),
           userId: "temp_user_" + Math.random().toString(36),
-          prompt: data.selectedPrompt,
-          currentTurn: 1,
-          maxTurns: 5,
+          prompt: data,
           messages: [],
           status: "active",
           createdAt: new Date(),
         });
-
-        socket.sessionId = session.sessionId;
       
         await session.save();
 
-        const aiOpening = await openAi.chat.completions.create({
+        const aiOpening = await openai.chat.completions.create({
           model: "gpt-4",
           messages: [
             {
               role: "system",
-              content: `You are helping a student practice speaking about: "${data.selectedPrompt.text}". Start the conversation by introducing the topic and asking an engaging question. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
+              content: `You are helping a student practice speaking about: "${data.topic}" and the prompt is "${data.prompt} with difficulty at ${data.difficulty}
+              ". Start the conversation by introducing the topic and asking an engaging question. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
             },
             {
               role: "user",
@@ -57,10 +64,10 @@ io.on('connection', (socket) => {
           ],
         });
 
+
         session.messages.push({
           speaker: "ai",
-          message: aiOpening,
-          turnNumber: 1,
+          content: aiOpening.choices[0].message.content,
           timestamp: new Date(),
         });
         await session.save();
@@ -68,82 +75,59 @@ io.on('connection', (socket) => {
 
         socket.emit("conversation-started", {
           sessionId: session.sessionId,
-          aiMessage: aiOpening,
-          turnNumber: 1,
+          aiMessage: aiOpening.choices[0].message.content,
+          timeStamp: session.timeStamp
         });
     });
     
 
     socket.on("student-response", async (data) => {
+      console.log(`student-response data: ${data}`)
       const session = await Conversation.findOne({
-        sessionId: socket.sessionId,
+        sessionId: data.sessionId,
       });
-
 
       session.messages.push({
         speaker: "student",
-        message: data.message,
-        turnNumber: session.currentTurn,
+        message: data.studentMessage,
         timestamp: new Date(),
       });
 
 
-      const aiResponse = await generateAIResponse(data.message);
+      const aiResponse = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: `You are helping a student practice speaking about: "${session.prompt.topic}" and the prompt is "${session.prompt.prompt} with difficulty at ${session.promptdifficulty}
+            ". You are continuing the conversation by replying to ${data.studentMessage}. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
+          },
+          {
+            role: "user",
+            content: data.studentMessage,
+          },
+        ],
+      });
 
     
       session.messages.push({
         speaker: "ai",
-        message: aiResponse,
-        turnNumber: session.currentTurn,
+        message: aiResponse.choices[0].message.content,
         timestamp: new Date(),
       });
-
-
-      session.currentTurn += 1;
-      if (session.currentTurn > session.maxTurns) {
-        session.status = "completed";
-        session.completedAt = new Date();
-      }
 
       
       await session.save();
 
     
       socket.emit("ai-response", {
-        message: aiResponse,
-        turnNumber: session.currentTurn,
-        isComplete: session.status === "completed",
+        sessionId: session.sessionId,
+        timeStamp: session.timeStamp,
+        aiMessage: aiResponse.choices[0].message.content,
       });
     });
     
-    socket.on("end-conversation", async (data) => {
-   
-      const session = await Conversation.findOne({
-        sessionId: socket.sessionId,
-      });
-
- 
-      session.status = "completed";
-      session.completedAt = new Date();
-      await session.save();
-
-
-
-      socket.emit("conversation-ended", {
-        sessionId: session.sessionId,
-        summary: {
-          totalTurns: session.messages.length,
-          duration: session.completedAt - session.createdAt,
-          feedback: "Great job practicing!",
-        },
-      });
-
-     
-    });
   });
-
-
-
 
 
 // log every request to the console
@@ -156,9 +140,7 @@ app.use((req, res, next) => {
 
 
 // Connect to MongoDB
-const client = new MongoClient('mongodb://localhost:27017');
-const conn = await client.connect();
-const db = conn.db('app');
+
 
 
 /*
@@ -221,14 +203,13 @@ app.get('/reading', async (req, res) => {
 
 
 app.get("/speech-prompt",  async (req, res) => {
-    console.log("=== ROUTE HIT ===");
-    console.log("Query params:", req.query);
+
 
     const difficulty = req.query.difficulty;
-    console.log("Difficulty:", difficulty);
+    
 
     const topic = req.query.topic;
-    console.log("Topic:", topic);
+
     let filter = {};
     if (difficulty) {
       filter.difficulty = difficulty;

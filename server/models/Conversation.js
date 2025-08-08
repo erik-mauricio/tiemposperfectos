@@ -1,5 +1,24 @@
 import mongoose from "mongoose";
 
+import dotenv from "dotenv";
+dotenv.config(); // make sure your MONGODB_URI is loaded
+
+mongoose
+  .connect(
+    process.env.MONGODB_URI || "mongodb://localhost:27017",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+  });
+
+
 const conversationSchema = new mongoose.Schema(
   {
     sessionId: {
@@ -12,14 +31,6 @@ const conversationSchema = new mongoose.Schema(
       text: String,
       topic: String,
       difficulty: String,
-    },
-    currentTurn: {
-      type: Number,
-      default: 1,
-    },
-    maxTurns: {
-      type: Number,
-      default: 5,
     },
     messages: [
       {

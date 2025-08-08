@@ -27,6 +27,13 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
         topic: topic
       };
       gameSettings(newSettings)
+    } else {
+      const newSettings = {
+        difficulty: difficulty,
+        numQs: numQuestions,
+        topic: topic,
+      };
+      gameSettings(newSettings)
 
     }
     

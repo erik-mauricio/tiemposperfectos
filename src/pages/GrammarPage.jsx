@@ -6,6 +6,7 @@ import Instructions from "../components/Instructions.jsx";
 import Controls from "../components/Controls.jsx";
 import PageCard from "../components/PageCard.jsx";
 import WelcomeText from "../components/WelcomeText.jsx";
+import Score from "../components/Score.jsx";
 
 
 export default function GrammarPage() {
@@ -28,20 +29,16 @@ export default function GrammarPage() {
       for (const [key, value] of Object.entries(userAnswers)) {
         results.push(correctAnswers[key] === value);
       }
-      console.log(results)
       setBooleanResponses(results)
-      
-    }
-
-    const getScore = () => {
-      let count = 0
-      for(let i = 0; i < conjugations.length; ++i){
-        if(booleanResponses[i]){
-          count += 1
+      const totalQs = readingData.questions?.length;
+      let count = 0;
+      for (let i = 0; i < conjugations.length; ++i) {
+        if (booleanResponses[i]) {
+          count += 1;
         }
       }
-      return (count / conjugations.length) * 100
-
+      setScore((count / totalQs) * 100);
+      
     }
 
     return (
@@ -74,24 +71,10 @@ export default function GrammarPage() {
                 pick your settings and let’s get reading!`}
             ></WelcomeText>
 
-            <div className="rounded-md border-2 bg-white p-2 flex justify-between border-[#e9ecef]">
-              <div>
-                <h2 className="text-2xl text-[#2c3e50] font-bold">
-                  Tense: {settings.tense}
-                </h2>
+            
 
-                <h3 className="text-xl text-gray-500">
-                  Difficulty: {settings.difficulty} * {settings.numQs} excersies
-                </h3>
-              </div>
-
-              <div>
-                <h2 className="text-2xl text-center font-bold text-[#e74c3c]">
-                  {booleanResponses.length > 0 && getScore()}%
-                </h2>
-                <p className="text-xl text-gray-500">Current score</p>
-              </div>
-            </div>
+            <Score  gameType={"grammar"}scoreColor={"#e74c3c"} settings={settings}></Score>
+            
 
             <Instructions
               title="Fill in the Blanks"
