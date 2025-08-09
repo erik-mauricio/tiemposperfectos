@@ -6,7 +6,7 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
   const [difficulty, setDifficulty] = useState("Beginner");
   const [numQuestions, setNumQuestions] = useState(5);
   const [tense, setTense] = useState("Presente");
-  const [topic, setTopic] = useState("Presentation Formal Speech")
+  const [topic, setTopic] = useState("")
   const [settings, setSettings] = useState({})
 
   const [liveSearchText, setLiveSearchText] = useState("")
