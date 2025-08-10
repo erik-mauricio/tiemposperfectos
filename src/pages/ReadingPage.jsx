@@ -6,6 +6,7 @@ import WelcomeText from "../components/WelcomeText.jsx";
 import Instructions from "../components/Instructions.jsx";
 import Score from "../components/Score.jsx"
 import { set } from "mongoose";
+import { useEffect } from "react";
 
 export default function ReadingPage() {
     
@@ -23,9 +24,6 @@ export default function ReadingPage() {
       };
     }
 
-    
-    
-
     const checkResponses = (responses) => {
       if (readingData.questions?.length == 0){
         setScore(0)
@@ -41,6 +39,11 @@ export default function ReadingPage() {
       setScore((count / totalQs) * 100);
     
     }
+
+      useEffect(() => {
+        setBooleanResponses([])
+        setUserAnswers({})
+      }, [readingData])
 
 
         return (
