@@ -18,60 +18,124 @@ export default function SpeechPage() {
   const [isTimerOn, setIsTimerOn] = useState(false)
   const [time, setTime] = useState(20)
   const recognitionRef = useRef(null);
-
-  const [isUserSpeaking, setIsUserSpeaking] = useState(false)
-
-  console.log(messages)
-
-
-
-  const socket = io("http://localhost:8080");
+  const socketRef = useRef(null);
+  const turnsRef = useRef(null)
 
   const beginRecording = () => {
-    setSettings({ ...settings, prompt: prompt });
-    socket.emit("start-conversation", settings);
+    const settingsData = { ...settings, prompt: prompt };
+    turnsRef.current = 0
+    setSettings(settingsData);
+    socketRef.current.emit("start-conversation", settingsData);
   };
+
+  useEffect(() => {
+    socketRef.current = io("http://localhost:8080");
+
+    const socket = socketRef.current;
+
+    socket.on("conversation-started", async (data) => {
+      sessionIdRef.current = data.sessionId;
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: prevMessages.length + 1,
+          type: "ai",
+          content: data.aiMessage,
+        },
+      ]);
+      await AISpeaking(data.aiMessage);
+      studentSpeaking();
+      
+    });
+
+    socket.on("ai-response", async (data) => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          type: "ai",
+          content: data.aiMessage,
+        },
+      ]);
+      await AISpeaking(data.aiMessage);
+      if(turnsRef.current < 5){
+        studentSpeaking();
+      } else {
+        socket.emit("end-conversation", {sessionId: sessionIdRef.current})
+      }
+      
+    });
+
+    socket.on("conversation-ended", () => {
+      
+    });
+
+    return () => {
+      socket.off("conversation-started");
+      socket.off("ai-response");
+      socket.off("conversation-ended");
+      socket.disconnect();
+    };
+  }, []);
+
+
+
 
   const AISpeaking = (text) => {
     return new Promise((resolve) => {
+      if (recognitionRef.current){
+        recognitionRef.current.stop();
+      } 
+
       speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "es-MX";
 
-      utterance.onend = () => {
-        setTime(20);
-        setIsTimerOn(false)
-        resolve();
-        
-
-      };
-
+      utterance.onend = () => resolve();
       speechSynthesis.speak(utterance);
     });
   };
   
-
   const studentSpeaking = () => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SpeechRecognition){
+      return;
+    }
+
+    if (turnsRef.current >= 5){
+      return;
+    }
 
     recognitionRef.current = new SpeechRecognition();
     recognitionRef.current.lang = "es-MX";
-    recognitionRef.current.continuous = true;
     recognitionRef.current.interimResults = true;
 
     let finalTranscript = "";
+    let interimTranscript = "";
+    recognitionRef.current.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const txt = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalTranscript += txt;
+        else interim += txt;
+      }
+      // add live user speak later
+    };
 
-    recognitionRef.current.onresult = (event) => {
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + " ";
-        }
+    recognitionRef.current.onerror = () => {
+      setIsTimerOn(false);
+      if (socketRef.current) {
+        socketRef.current.emit("student-response", {
+          studentMessage: "",
+          sessionId: sessionIdRef.current,
+        });
       }
     };
 
     recognitionRef.current.onend = () => {
+      turnsRef.current += 1;
+      setIsTimerOn(false)
       if (finalTranscript.trim().length > 1) {
         setMessages((prev) => [
           ...prev,
@@ -81,7 +145,7 @@ export default function SpeechPage() {
             content: finalTranscript.trim(),
           },
         ]);
-        socket.emit("student-response", {
+        socketRef.current.emit("student-response", {
           studentMessage: finalTranscript.trim(),
           sessionId: sessionIdRef.current,
         });
@@ -94,54 +158,21 @@ export default function SpeechPage() {
   };
 
 
-  socket.on("conversation-started", async (data) => {
-    sessionIdRef.current = data.sessionId;
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        type: "ai",
-        content: data.aiMessage,
-      },
-    ]);
-    await AISpeaking(data.aiMessage)
-    studentSpeaking()
-  });
 
-
-
-  socket.on("ai-response", async (data) => {
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        type: "ai",
-        content: data.aiMessage,
-      },
-    ]);
-    await AISpeaking(data.aiMessage);
-    studentSpeaking()
-  } );
-
-  socket.on("conversation-ended", async(data) => {
-    setIsRecording(false)
-  });
 
   
   useEffect(() => {
     if (!isTimerOn) return;
 
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-
-    
-
+  
     const interval = setInterval(() => {
       setTime((prev) => {
         if (prev <= 1) {
           setIsTimerOn(false);
-          return 0;
+          if (recognitionRef.current){
+            recognitionRef.current.stop();
+            return 0;
+          } 
         }
         return prev - 1;
       });

@@ -34,25 +34,22 @@ export default function HomePage() {
             <div className="border-3 border-slate-500 rounded-md p-4 bg-slate-300 space-y-2">
               <div className="flex gap-2">
                 <CircleCheckBig />
-                <p className="text-slate-800 text-lg">
+                <p className="text-slate-800 text-xl">
                   Adaptive difficulty levels
                 </p>
               </div>
 
               <div className="flex gap-2">
                 <CircleCheckBig />
-                <p className="text-slate-800">Adaptive difficulty levels</p>
+                <p className="text-slate-800 text-xl">Real-time speech recognition</p>
               </div>
 
               <div className="flex gap-2">
                 <CircleCheckBig />
-                <p className="text-slate-800">Adaptive difficulty levels</p>
+                <p className="text-slate-800 text-xl">Instant feedback & scoring</p>
               </div>
 
-              <div className="flex gap-2">
-                <CircleCheckBig />
-                <p className="text-slate-800">Adaptive difficulty levels</p>
-              </div>
+              
             </div>
           </div>
 

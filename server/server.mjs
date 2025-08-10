@@ -46,6 +46,7 @@ io.on('connection', (socket) => {
           status: "active",
           createdAt: new Date(),
         });
+
       
         await session.save();
 
@@ -54,13 +55,9 @@ io.on('connection', (socket) => {
           messages: [
             {
               role: "system",
-              content: `You are helping a student practice speaking about: "${data.topic}" and the prompt is "${data.prompt} with difficulty at ${data.difficulty}
-              ". Start the conversation by introducing the topic and asking an engaging question. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
+              content: `You are helping a student practice speaking about: "${data.topic}" and the prompt is "${data.prompt}" with difficulty at ${data.difficulty}. Start the conversation by introducing the topic and asking an engaging question. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
             },
-            {
-              role: "user",
-              content: "Begin",
-            },
+            { role: "user", content: "Begin" },
           ],
         });
 
@@ -76,21 +73,35 @@ io.on('connection', (socket) => {
         socket.emit("conversation-started", {
           sessionId: session.sessionId,
           aiMessage: aiOpening.choices[0].message.content,
-          timeStamp: session.timeStamp
+          timestamp: Date.now()
         });
     });
     
 
     socket.on("student-response", async (data) => {
-      console.log(`student-response data: ${data}`)
+      console.log("student-response data:", JSON.stringify(data));
       const session = await Conversation.findOne({
         sessionId: data.sessionId,
       });
 
+      if(!session){
+        return;
+      }
+
+      const studentTurns = session.messages.filter(
+        (m) => m.speaker === "student"
+      ).length;
+      if (studentTurns >= 5) {
+        session.status = "ended";
+        await session.save();
+        socket.emit("conversation-ended", { sessionId: data.sessionId });
+        return;
+      }
+
       session.messages.push({
         speaker: "student",
-        message: data.studentMessage,
-        timestamp: new Date(),
+        content: data.studentMessage,
+        timestamp: Date.now(),
       });
 
 
@@ -99,21 +110,17 @@ io.on('connection', (socket) => {
         messages: [
           {
             role: "system",
-            content: `You are helping a student practice speaking about: "${session.prompt.topic}" and the prompt is "${session.prompt.prompt} with difficulty at ${session.promptdifficulty}
-            ". You are continuing the conversation by replying to ${data.studentMessage}. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
+            content: `You are helping a student practice speaking about: "${session.prompt.topic}" and the prompt is "${session.prompt.prompt}" with difficulty at ${session.prompt.difficulty}. You are continuing the conversation by replying to ${data.studentMessage}. Your text should be enough to cover 20s of real conversation time. Respond in Spanish.`,
           },
-          {
-            role: "user",
-            content: data.studentMessage,
-          },
+          { role: "user", content: data.studentMessage },
         ],
       });
 
     
       session.messages.push({
         speaker: "ai",
-        message: aiResponse.choices[0].message.content,
-        timestamp: new Date(),
+        content: aiResponse.choices[0].message.content,
+        timestamp: Date.now(),
       });
 
       

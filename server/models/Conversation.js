@@ -19,42 +19,47 @@ mongoose
   });
 
 
-const conversationSchema = new mongoose.Schema(
-  {
-    sessionId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    userId: String,
-    prompt: {
-      text: String,
-      topic: String,
-      difficulty: String,
-    },
-    messages: [
-      {
-        speaker: {
-          type: String,
-          enum: ["ai", "student"],
-        },
-        message: String,
-        turnNumber: Number,
-        timestamp: {
-          type: Date,
-          default: Date.now,
-        },
+  const conversationSchema = new mongoose.Schema(
+    {
+      sessionId: {
+        type: String,
+        required: true,
+        unique: true,
       },
-    ],
-    status: {
-      type: String,
-      enum: ["active", "completed", "timeout"],
-      default: "active",
+      userId: String,
+      prompt: {
+        text: String,
+        topic: String,
+        difficulty: String,
+      },
+      messages: [
+        {
+          speaker: {
+            type: String,
+            enum: ["ai", "student"],
+            required: true,
+          },
+          content: {
+            type: String,
+            required: true,
+          },
+          turnNumber: Number,
+          timestamp: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
+      status: {
+        type: String,
+        enum: ["active", "completed", "timeout", "ended"],
+        default: "active",
+      },
     },
-  },
-  {
-    timestamps: true,
-  }
-);
+    {
+      timestamps: true,
+    }
+  );
 
-export default mongoose.model("Conversation", conversationSchema);
+  export default mongoose.model("Conversation", conversationSchema);
+  

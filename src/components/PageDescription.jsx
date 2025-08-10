@@ -13,13 +13,13 @@ export default function PageDescription({title, titleIcon, text, details, bgColo
             <h2 className="font-bold text-3xl">{title}</h2>
           </div>
 
-          <p className="font-semibold text-xl">{text}</p>
+          <p className="text-2xl text-grey-300">{text}</p>
           {details.length > 0 && (
             <>
               {details.map((detail, index) => (
                 <div className="flex gap-2">
-                  <CircleCheckBig color="#653939" />
-                  <p key={index}>{detail}</p>
+                  <CircleCheckBig color="green" />
+                  <p className="text-xl" key={index}>{detail}</p>
                 </div>
               ))}
             </>
