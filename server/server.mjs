@@ -158,8 +158,6 @@ app.get('/conjugations', async (req, res) => {
     const numberQuestions = parseInt(req.query.numberQuestions);
     const tense = req.query.tense;
 
-
-
     let filter = {};
     if (difficulty) {
       filter.difficulty = difficulty;
@@ -177,17 +175,17 @@ app.get('/conjugations', async (req, res) => {
       .collection("conjugations")
       .aggregate(filters)
       .toArray();
-    console.log(conjugations)
+
     res.status(200).json(conjugations);
 });
 
 app.get('/reading', async (req, res) => {
-    console.log("hi")
+
     const difficulty = req.query.difficulty;
-    console.log(difficulty)
     const liveText = req.query.q
+    console.log(liveText)
     const topic = req.query.topic
-    console.log(topic);
+
 
 
     let filter = {}
@@ -203,7 +201,7 @@ app.get('/reading', async (req, res) => {
 
     const readings = await db.collection('passages')
         .findOne(filter)
-    console.log(readings)
+  
     res.status(200).json(readings);
 });
 
@@ -225,7 +223,6 @@ app.get("/speech-prompt",  async (req, res) => {
       filter.topic = topic;
     }
     const prompt = await db.collection("prompts").findOne(filter)
-    console.log(prompt)
     res.status(200).json(prompt)
 
 });

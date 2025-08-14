@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { CircleCheckBig } from "lucide-react";
 
-export default function PageDescription({title, titleIcon, text, details, bgColor}){
+export default function PageDescription({title, titleIcon, text, details, bgColor, pageLink}){
     return (
       <>
         <div
@@ -9,7 +9,7 @@ export default function PageDescription({title, titleIcon, text, details, bgColo
           style={{ backgroundColor: bgColor }}
         >
           <div className=" flex gap-2 ">
-            {titleIcon}
+            <div className="mt-2">{titleIcon}</div>
             <h2 className="font-bold text-3xl">{title}</h2>
           </div>
 
@@ -19,15 +19,17 @@ export default function PageDescription({title, titleIcon, text, details, bgColo
               {details.map((detail, index) => (
                 <div className="flex gap-2">
                   <CircleCheckBig color="green" />
-                  <p className="text-xl" key={index}>{detail}</p>
+                  <p className="text-xl" key={index}>
+                    {detail}
+                  </p>
                 </div>
               ))}
             </>
           )}
 
           <div className="text-center">
-            <div className="rounded-xl border-2 bg-slate-200 max-w-xl mx-auto">
-              <Link to="/grammar" className="block py-3 px-2">
+            <div className="rounded-xl border-2 bg-green-400 max-w-xl mx-auto hover:bg-emerald-400">
+              <Link to={pageLink} className="block py-3 px-2">
                 Start Practicing
               </Link>
             </div>

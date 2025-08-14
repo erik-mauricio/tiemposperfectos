@@ -1,5 +1,4 @@
 export default function Score({settings, score, scoreColor, gameType}){
-  console.log(settings.tense)
 
    
     return (

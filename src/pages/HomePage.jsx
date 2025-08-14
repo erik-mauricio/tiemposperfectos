@@ -10,8 +10,8 @@ export default function HomePage() {
       <>
         <NavigationMenu />
         <div className="min-h-screen text-slate-800 w-full mx-auto ">
-          <div className="bg-slate-800 max-w-full p-4 text-white space-y-4 w-full">
-            <h1 className="text-white text-5xl font-bold">
+          <div className="bg-[rgb(255,107,107)]  max-w-full p-4 text-slate-900 space-y-4 w-full">
+            <h1 className="text-slate-900 text-5xl font-bold">
               Learning Spanish? Getting ready for AP Tests
             </h1>
 
@@ -21,17 +21,7 @@ export default function HomePage() {
               Spanish fluency.
             </p>
 
-            <div className="flex gap-2">
-              <div className="border-2 rounded-lg p-3">
-                <button className="flex gap-2">
-                  Ready to Learn <ChevronDown />
-                </button>
-              </div>
-
-              <button className="border-2 rounded-xl p-3">Watch Demo</button>
-            </div>
-
-            <div className="border-3 border-slate-500 rounded-md p-4 bg-slate-300 space-y-2">
+            <div className="border-3 border-slate-500 rounded-md p-4 bg-orange-100 space-y-2">
               <div className="flex gap-2">
                 <CircleCheckBig />
                 <p className="text-slate-800 text-xl">
@@ -41,19 +31,21 @@ export default function HomePage() {
 
               <div className="flex gap-2">
                 <CircleCheckBig />
-                <p className="text-slate-800 text-xl">Real-time speech recognition</p>
+                <p className="text-slate-800 text-xl">
+                  Real-time speech recognition
+                </p>
               </div>
 
               <div className="flex gap-2">
                 <CircleCheckBig />
-                <p className="text-slate-800 text-xl">Instant feedback & scoring</p>
+                <p className="text-slate-800 text-xl">
+                  Instant feedback & scoring
+                </p>
               </div>
-
-              
             </div>
           </div>
 
-          <div className="bg-slate-300 max-w-full p-4 text-center space-y-2">
+          <div className="bg-orange-100 max-w-full p-4 text-center space-y-2">
             <h2 className="text-4xl font-bold">Choose Your Adventure</h2>
 
             <p>
@@ -65,13 +57,14 @@ export default function HomePage() {
               title={"Grammar"}
               titleIcon={<BookOpen />}
               text={`Master Spanish grammar  conjugation with
-                fill-in-the-blank exercises that personalized to desired level of difficulty.`}
+               fill-in-the-blank exercises that personalized to desired level of difficulty.`}
               details={[
                 "Multiple tense options available",
                 "Instant accuracy score",
                 "Customizable question sets (5-15)",
               ]}
-              bgColor={"#e74d3ce3"}
+              bgColor={"#ff6b6b"}
+              pageLink={"/grammar"}
             ></PageDescription>
 
             <PageDescription
@@ -83,24 +76,26 @@ export default function HomePage() {
                 "AI conversation partners",
                 "Topic filtering or live search to find what YOU want to practice speaking about",
               ]}
-              bgColor={"oklch(70.2% 0.183 293.541)"}
+              bgColor={"#4ecdc4"}
+              pageLink={"/speech"}
             ></PageDescription>
 
             <PageDescription
               title={"Reading"}
               titleIcon={<BookOpen />}
               text={`Master Spanish grammar  conjugation with
-                fill-in-the-blank exercises that personalized to desired level of difficulty.`}
+               fill-in-the-blank exercises that personalized to desired level of difficulty.`}
               details={[
                 "Multiple tense options available",
                 "Instant accuracy score",
                 "Customizable question sets (5-15)",
               ]}
-              bgColor={"oklch(70.7% 0.165 254.624)"}
+              bgColor={"#45b7d1"}
+              pageLink={"/reading"}
             ></PageDescription>
           </div>
 
-          <div className="bg-slate-800 max-w-full p-4 text-white text-center min-h-full">
+          <div className="bg-[#2c3e50]  max-w-full p-4 text-white text-center min-h-full">
             <p className="text-white">Developed by Erik Mauricio</p>
             <p>Github</p>
           </div>

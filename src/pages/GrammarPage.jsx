@@ -1,12 +1,13 @@
 import NavigationMenu from "../components/NavigationMenu.jsx";
 import GameSettings from "../components/GameSettings.jsx";
-import { use, useState } from "react";
+import { use, useRef, useState } from "react";
 import { useEffect } from "react";
 import Instructions from "../components/Instructions.jsx";
 import Controls from "../components/Controls.jsx";
 import PageCard from "../components/PageCard.jsx";
 import WelcomeText from "../components/WelcomeText.jsx";
 import Score from "../components/Score.jsx";
+import Skeleton from "../components/Skeleton.jsx";
 
 export default function GrammarPage() {
   const [conjugations, setConjugations] = useState([]);
@@ -18,12 +19,17 @@ export default function GrammarPage() {
     tense: "",
   });
   const correctAnswers = conjugations.map((item) => item.answer);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(0)
+
+  const [isSiteLoading, setIsSiteLoading] = useState(false);
+  const [loadError, setLoadError] = useState();
+ 
 
   const splitSentence = (sentence) => {
     const newSentence = sentence.split("_____");
     return newSentence;
   };
+
 
   const checkResponses = (responses) => {
     const results = []
@@ -34,17 +40,18 @@ export default function GrammarPage() {
     const totalQs = conjugations.length;
     let count = 0;
     for (let i = 0; i < conjugations.length; ++i) {
-      if (booleanResponses[i]) {
+      if (results[i]) {
         count += 1;
       }
     }
-    setScore((count / totalQs) * 100);
-    
+    const total =  (count / totalQs) * 100;
+    setScore(total)
   }
 
   useEffect(() => {
     setBooleanResponses([])
     setUserAnswers({})
+    setScore(0)
   }, [conjugations])
   
   
@@ -58,6 +65,8 @@ export default function GrammarPage() {
           gameType={"grammar"}
           conjugationsHandler={setConjugations}
           gameSettings={setSettings}
+          siteError={setLoadError}
+          siteLoading={setIsSiteLoading}
         />
 
         <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
@@ -83,6 +92,7 @@ export default function GrammarPage() {
             gameType={"grammar"}
             scoreColor={"#e74c3c"}
             settings={settings}
+            score={score}
           ></Score>
 
           <Instructions
@@ -95,7 +105,13 @@ export default function GrammarPage() {
                   phrases. Pay attention to verb conjugations, grammar rules,
                   and context clues."
             titleColor={"#e74c3c"}
-          >
+          >{isSiteLoading && (
+            <>
+              <Skeleton></Skeleton>
+            </>
+          )
+
+          }
             {conjugations?.length > 0 &&
               conjugations.map((question, index) => (
                 <div className="p-3" key={index}>

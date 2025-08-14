@@ -2,14 +2,17 @@ import axios from "axios";
 import { useState, useEffect, use } from "react";
 import { useDebounce } from "use-debounce";
 
-export default function Controls({ gameType, conjugationsHandler, readingHandler, gameSettings, handlePrompt}) {
+export default function Controls({ gameType, conjugationsHandler, readingHandler, gameSettings, handlePrompt, siteLoading, siteError}) {
   const [difficulty, setDifficulty] = useState("Beginner");
   const [numQuestions, setNumQuestions] = useState(5);
   const [tense, setTense] = useState("Presente");
   const [topic, setTopic] = useState("")
   const [settings, setSettings] = useState({})
 
+
+
   const [liveSearchText, setLiveSearchText] = useState("")
+  const [searchParam] = useDebounce(liveSearchText, 700)
 
   const controlTitle = {reading: "Reading Setup", speech: "Conversation Setup", grammar: "Grammar Setup"}
 
@@ -36,8 +39,6 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
       gameSettings(newSettings)
 
     }
-    
-  
   }, [difficulty, numQuestions, tense, topic]);
 
   const questionOptions = {
@@ -46,25 +47,31 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
     speech: ["3s", "5s", "10s"],
   };
 
+  const functionCallBacks = {
+    reading: loadPassages,
+    grammar: loadConjugations,
+    speech: loadSpeech,
+  };
+
   const btnText = {
     reading: "New Passage",
     grammar: "New Questions",
     speech: "New Prompt",
   };
 
-  const verbTenses = ["Presente", "Imperfecto"];
+  const verbTenses = [
+    "Presente",
+    "Preterite",
+    "Imperfecto",
+    "Futuro",
+    "Condicional",
+  ];
 
   const topics = [
-    "Animals",
     "Culture",
-    "Food",
-    "Health",
     "History",
-    "Nature",
     "People",
     "Science",
-    "Sports",
-    "Travel",
   ];
 
     const convoType = [
@@ -77,42 +84,68 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
     ];
 
   function loadConjugations() {
-    if(gameType == "grammar"){
+    siteLoading(true)
+    if (gameType === "grammar") {
+      axios
+        .get("http://localhost:8080/conjugations", {
+          params: {
+            tense: tense,
+            difficulty: difficulty,
+            numberQuestions: numQuestions,
+          },
+        })
+        .then((res) => {
+          conjugationsHandler(res.data);
+        }).catch((error) => {
+          siteError(true)
+        }).finally(() => {
+          siteLoading(false)
+        })
+    }
+  }
+
+  function loadSpeech(){
     axios
-      .get("http://localhost:8080/conjugations", {
+      .get("http://localhost:8080/speech-prompt", {
         params: {
-          tense: tense,
           difficulty: difficulty,
-          numberQuestions: numQuestions,
+          topic: topic,
         },
       })
       .then((res) => {
-        conjugationsHandler(res.data);
-      });}
-      else if (gameType == "reading"){
-        axios
-          .get("http://localhost:8080/reading", {
-            params: {
-              difficulty: difficulty,
-              topic: topic,
-              q: liveSearchText,
-            },
-          })
-          .then((res) => {
-            readingHandler(res.data);
-          });
-
-      } else if (gameType == "speech"){
-        axios.get("http://localhost:8080/speech-prompt", {
-          params: {
-            difficulty: difficulty,
-            topic: topic
-          }
-        }).then((res) => {
-          handlePrompt(res.data);
-        });
-      }
+        handlePrompt(res.data);
+      });
   }
+
+  function loadPassages(){
+    axios
+      .get("http://localhost:8080/reading", {
+        params: {
+          difficulty: difficulty,
+          topic: topic,
+          q: searchParam,
+        },
+      })
+      .then((res) => {
+        console.log(res.data)
+        readingHandler(res.data);
+      });
+    
+  }
+
+  useEffect(() => {
+    if(liveSearchText != "" && gameType ==="reading"){
+      loadPassages();
+    } 
+
+  }, [searchParam]);
+
+
+
+
+
+
+  
 
   return (
     <>
@@ -155,6 +188,7 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
                 type="text"
                 className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold"
                 placeholder="type"
+                onChange={(e) => setLiveSearchText(e.target.value)}
               ></input>
             </div>
             <div>
@@ -271,7 +305,7 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
 
         <button
           className="rounded-md px-6 py-4 bg-[#3498db] mt-4 text-white font-bold text-center hover:bg-[#2980b9] w-full max-w-xs"
-          onClick={() => loadConjugations()}
+          onClick={() => functionCallBacks[gameType]()}
         >
           {btnText[gameType]}
         </button>
