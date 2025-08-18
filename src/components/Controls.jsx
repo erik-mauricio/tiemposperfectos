@@ -118,18 +118,22 @@ export default function Controls({ gameType, conjugationsHandler, readingHandler
   }
 
   function loadPassages(){
+    siteError(false)
     axios
       .get("http://localhost:8080/reading", {
         params: {
           difficulty: difficulty,
           topic: topic,
           q: searchParam,
+          numberQuestions: numQuestions
         },
       })
       .then((res) => {
         console.log(res.data)
         readingHandler(res.data);
-      });
+      }).catch( (error) => {
+        siteError(true)
+      })
     
   }
 

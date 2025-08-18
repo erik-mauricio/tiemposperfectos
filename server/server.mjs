@@ -33,7 +33,14 @@ const io = new Server(server, {
 });
 
 
-
+function pickRandom(arr, n) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, n);
+}
 
 io.on('connection', (socket) => {
 
@@ -148,8 +155,6 @@ app.use((req, res, next) => {
 
 // Connect to MongoDB
 
-
-
 /*
 Endpoint queries conjugations collection filters by user difficulty and tense
 */
@@ -183,7 +188,7 @@ app.get('/reading', async (req, res) => {
 
     const difficulty = req.query.difficulty;
     const liveText = req.query.q
-    console.log(liveText)
+    const numberQuestions = parseInt(req.query.numberQuestions)
     const topic = req.query.topic
 
 
@@ -198,11 +203,28 @@ app.get('/reading', async (req, res) => {
     if(liveText){
         filter.$text = {$search: liveText}
     }
+    
 
-    const readings = await db.collection('passages')
-        .findOne(filter)
+    const readings = await db
+      .collection("passages")
+      .aggregate([
+        { $match: filter }, 
+        { $sample: { size: 1 } }, 
+      ])
+      .toArray();
+
+
+
+    if(readings){
+      const passage = readings[0]
+      passage.questions = pickRandom(passage.questions, numberQuestions);
+      res.status(200).json(passage);
+    } else {
+      res.status(404).send()
+    }
   
-    res.status(200).json(readings);
+  
+    
 });
 
 

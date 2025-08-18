@@ -1,4 +1,4 @@
-export default function Instructions({children, title, text, titleColor, gameType}){
+export default function Instructions({children, title, text, textTitle, titleColor, gameType}){
 
    
     return (
@@ -10,7 +10,12 @@ export default function Instructions({children, title, text, titleColor, gameTyp
           {title}
         </h2>
 
-        <div className="p-4  bg-[#f8f9fa]">
+        <div className="p-4  bg-[#f8f9fa] ">
+
+        <h2
+          className={`font-bold text-2xl text-slate-800`}
+        >
+          {textTitle}</h2>
           <p className="text-xl">{text}</p>
         </div>
 
