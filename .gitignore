@@ -25,3 +25,6 @@ dist-ssr
 
 .env
 **/.env
+
+# Local-only notes
+LOCAL_PR_SUMMARY.md

@@ -1,321 +1,127 @@
-import axios from "axios";
-import { useState, useEffect, use } from "react";
-import { useDebounce } from "use-debounce";
-
-export default function Controls({ gameType, conjugationsHandler, readingHandler, gameSettings, handlePrompt, siteLoading, siteError}) {
-  const [difficulty, setDifficulty] = useState("Beginner");
-  const [numQuestions, setNumQuestions] = useState(5);
-  const [tense, setTense] = useState("Presente");
-  const [topic, setTopic] = useState("")
-  const [settings, setSettings] = useState({})
-
-
-
-  const [liveSearchText, setLiveSearchText] = useState("")
-  const [searchParam] = useDebounce(liveSearchText, 700)
-
-  const controlTitle = {reading: "Reading Setup", speech: "Conversation Setup", grammar: "Grammar Setup"}
-
-  useEffect(() => {
-    if(gameType === "grammar"){
-      const newSettings = {
-        difficulty: difficulty,
-        numQs: numQuestions,
-        tense: tense,
-      };
-      gameSettings(newSettings)
-    } else if(gameType === "speech") {
-      const newSettings = {
-        difficulty: difficulty,
-        topic: topic
-      };
-      gameSettings(newSettings)
-    } else {
-      const newSettings = {
-        difficulty: difficulty,
-        numQs: numQuestions,
-        topic: topic,
-      };
-      gameSettings(newSettings)
-
-    }
-  }, [difficulty, numQuestions, tense, topic]);
-
-  const questionOptions = {
-    reading: ["3", "5", "8"],
-    grammar: ["5", "10", "15"],
-    speech: ["3s", "5s", "10s"],
-  };
-
-  const functionCallBacks = {
-    reading: loadPassages,
-    grammar: loadConjugations,
-    speech: loadSpeech,
-  };
-
-  const btnText = {
-    reading: "New Passage",
-    grammar: "New Questions",
-    speech: "New Prompt",
-  };
-
-  const verbTenses = [
-    "Presente",
-    "Preterite",
-    "Imperfecto",
-    "Futuro",
-    "Condicional",
-  ];
-
-  const topics = [
-    "Culture",
-    "History",
-    "People",
-    "Science",
-  ];
-
-    const convoType = [
-      "Presentation Formal speech",
-      "Casual conversation",
-      "Storytelling",
-      "Debate/Argument",
-      "Interview responses",
-      "Impromptu speaking",
-    ];
-
-  function loadConjugations() {
-    siteLoading(true)
-    if (gameType === "grammar") {
-      axios
-        .get("http://localhost:8080/conjugations", {
-          params: {
-            tense: tense,
-            difficulty: difficulty,
-            numberQuestions: numQuestions,
-          },
-        })
-        .then((res) => {
-          conjugationsHandler(res.data);
-        }).catch((error) => {
-          siteError(true)
-        }).finally(() => {
-          siteLoading(false)
-        })
-    }
-  }
-
-  function loadSpeech(){
-    axios
-      .get("http://localhost:8080/speech-prompt", {
-        params: {
-          difficulty: difficulty,
-          topic: topic,
-        },
-      })
-      .then((res) => {
-        handlePrompt(res.data);
-      });
-  }
-
-  function loadPassages(){
-    siteError(false)
-    axios
-      .get("http://localhost:8080/reading", {
-        params: {
-          difficulty: difficulty,
-          topic: topic,
-          q: searchParam,
-          numberQuestions: numQuestions
-        },
-      })
-      .then((res) => {
-        console.log(res.data)
-        readingHandler(res.data);
-      }).catch( (error) => {
-        siteError(true)
-      })
-    
-  }
-
-  useEffect(() => {
-    if(liveSearchText != "" && gameType ==="reading"){
-      loadPassages();
-    } 
-
-  }, [searchParam]);
-
-
-
-
-
-
-  
-
+export default function Controls({
+  title,
+  difficulty,
+  onDifficultyChange,
+  numQuestions,
+  questionOptions = [],
+  onNumQuestionsChange,
+  tense,
+  tenseOptions = [],
+  onTenseChange,
+  topic,
+  topicOptions = [],
+  topicLabel = "Topic",
+  onTopicChange,
+  searchText,
+  onSearchTextChange,
+  showTense = false,
+  showTopic = false,
+  showSearch = false,
+  showQuestionOptions = true,
+  generateLabel = "Generate",
+  onGenerate,
+}) {
   return (
-    <>
-      <aside className="h-screen p-4 bg-[rgb(55,75,90)] space-y-2 max-w-xs">
-        <h2 className="font-bold text-3xl text-[#f8f9fa] whitespace-nowrap">
-          {controlTitle[gameType]}
-        </h2>
+    <aside className="h-screen p-4 bg-[rgb(55,75,90)] space-y-2 max-w-xs">
+      <h2 className="font-bold text-3xl text-[#f8f9fa] whitespace-nowrap">{title}</h2>
 
-        {gameType == "grammar" && (
-          <div>
-            <label className="text-xl text-[#bdc3c7] font-bold ">
-              Grammar Tense:{" "}
-            </label>
-
-            <div className="flex-col space-y-2 mt-2">
-              <select
-                id="tense"
-                value={tense}
-                onChange={(e) => setTense(e.target.value)}
-                className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
-              >
-                {verbTenses.map((tense, index) => (
-                  <option key={index} value={tense}>
-                    {tense}
-                  </option>
-                ))}
-              </select>
-            </div>
+      {showTense && (
+        <div>
+          <label className="text-xl text-[#bdc3c7] font-bold ">Grammar Tense:</label>
+          <div className="flex-col space-y-2 mt-2">
+            <select
+              id="tense"
+              value={tense}
+              onChange={(event) => onTenseChange?.(event.target.value)}
+              className="p-2 border rounded-md bg-[#395c7f] text-white border-[#34495e] font-bold"
+            >
+              {tenseOptions.map((tenseOption) => (
+                <option key={tenseOption} value={tenseOption}>
+                  {tenseOption}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
-
-        {gameType == "reading" && (
-          <>
-            <div className="flex items-center gap-2">
-              <label className="text-xl text-[#bdc3c7] font-bold ">
-                Search:{" "}
-              </label>
-
-              <input
-                type="text"
-                className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold"
-                placeholder="type"
-                onChange={(e) => setLiveSearchText(e.target.value)}
-              ></input>
-            </div>
-            <div>
-              <label className="text-xl text-[#bdc3c7] font-bold ">
-                Topic:{" "}
-              </label>
-
-              <div className="flex-col space-y-2 mt-2">
-                <select
-                  id="tense"
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
-                >
-                  {topics.map((topic, index) => (
-                    <option key={index} value={topic}>
-                      {topic}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </>
-        )}
-
-        {gameType == "speech" && (
-          <>
-
-            <div>
-              <label className="text-xl text-[#bdc3c7] font-bold ">
-                Topic:{" "}
-              </label>
-
-              <div className="flex-col space-y-2 mt-2">
-                <select
-                  id="tense"
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
-                >
-                  {convoType.map((topic, index) => (
-                    <option key={index} value={topic}>
-                      {topic}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </>
-        )}
-
-        <label className="text-xl text-[#bdc3c7] font-bold ">
-          Difficulty:{" "}
-        </label>
-
-        <div className="flex col space-y-2 mt-2">
-          <select
-            id="difficulty"
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            className="p-2 border rounded-md	bg-[#395c7f] text-white border-[#34495e] font-bold "
-          >
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-          </select>
         </div>
+      )}
 
-        {gameType != "speech" && (
-          <>
-            <label className="text-xl text-[#bdc3c7] font-bold">
-              Questions:{" "}
-            </label>
-            <div className="flex gap-3 mt-2 text-center">
-              <button
-                className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
-            ${
-              numQuestions == parseInt(questionOptions[gameType][0])
-                ? "bg-[#e67e22]"
-                : "bg-[#f39c12] hover:bg-[#e67e22]"
-            }`}
-                value={parseInt(questionOptions[gameType][0])}
-                onClick={(e) => setNumQuestions(e.target.value)}
-              >
-                {questionOptions[gameType][0]}
-              </button>
-              <button
-                className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
-              ${
-                numQuestions == parseInt(questionOptions[gameType][1])
-                  ? "bg-[#e67e22]"
-                  : "bg-[#f39c12] hover:bg-[#e67e22]"
-              }`}
-                value={parseInt(questionOptions[gameType][1])}
-                onClick={(e) => setNumQuestions(e.target.value)}
-              >
-                {questionOptions[gameType][1]}
-              </button>
-              <button
-                className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white 
-              ${
-                numQuestions == parseInt(questionOptions[gameType][2])
-                  ? "bg-[#e67e22]"
-                  : "bg-[#f39c12] hover:bg-[#e67e22]"
-              }`}
-                value={parseInt(questionOptions[gameType][2])}
-                onClick={(e) => setNumQuestions(e.target.value)}
-              >
-                {questionOptions[gameType][2]}
-              </button>
-            </div>{" "}
-          </>
-        )}
+      {showSearch && (
+        <div className="flex items-center gap-2">
+          <label className="text-xl text-[#bdc3c7] font-bold ">Search:</label>
+          <input
+            type="text"
+            value={searchText}
+            className="p-2 border rounded-md bg-[#395c7f] text-white border-[#34495e] font-bold"
+            placeholder="Type"
+            onChange={(event) => onSearchTextChange?.(event.target.value)}
+          />
+        </div>
+      )}
 
-        <button
-          className="rounded-md px-6 py-4 bg-[#3498db] mt-4 text-white font-bold text-center hover:bg-[#2980b9] w-full max-w-xs"
-          onClick={() => functionCallBacks[gameType]()}
+      {showTopic && (
+        <div>
+          <label className="text-xl text-[#bdc3c7] font-bold ">{topicLabel}:</label>
+          <div className="flex-col space-y-2 mt-2">
+            <select
+              id="topic"
+              value={topic}
+              onChange={(event) => onTopicChange?.(event.target.value)}
+              className="p-2 border rounded-md bg-[#395c7f] text-white border-[#34495e] font-bold"
+            >
+              {topicOptions.map((topicOption) => (
+                <option key={topicOption} value={topicOption}>
+                  {topicOption}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
+      <label className="text-xl text-[#bdc3c7] font-bold ">Difficulty:</label>
+      <div className="flex col space-y-2 mt-2">
+        <select
+          id="difficulty"
+          value={difficulty}
+          onChange={(event) => onDifficultyChange?.(event.target.value)}
+          className="p-2 border rounded-md bg-[#395c7f] text-white border-[#34495e] font-bold"
         >
-          {btnText[gameType]}
-        </button>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      </div>
 
-        <br className="bg-black"></br>
-      </aside>
-    </>
+      {showQuestionOptions && questionOptions.length > 0 && (
+        <>
+          <label className="text-xl text-[#bdc3c7] font-bold">Questions:</label>
+          <div className="flex gap-3 mt-2 text-center">
+            {questionOptions.map((option) => {
+              const selected = Number(numQuestions) === Number(option);
+              return (
+                <button
+                  key={option}
+                  className={`flex-1 rounded-lg py-2 px-8 font-semibold transition-all duration-200 w-20 text-white ${
+                    selected ? "bg-[#e67e22]" : "bg-[#f39c12] hover:bg-[#e67e22]"
+                  }`}
+                  type="button"
+                  onClick={() => onNumQuestionsChange?.(Number(option))}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      <button
+        className="rounded-md px-6 py-4 bg-[#3498db] mt-4 text-white font-bold text-center hover:bg-[#2980b9] w-full max-w-xs"
+        type="button"
+        onClick={onGenerate}
+      >
+        {generateLabel}
+      </button>
+    </aside>
   );
 }

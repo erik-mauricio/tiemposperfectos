@@ -1,13 +1,13 @@
+import { useEffect, useState } from "react";
 import NavigationMenu from "../components/NavigationMenu.jsx";
-import GameSettings from "../components/GameSettings.jsx";
-import { use, useRef, useState } from "react";
-import { useEffect } from "react";
-import Instructions from "../components/Instructions.jsx";
 import Controls from "../components/Controls.jsx";
 import PageCard from "../components/PageCard.jsx";
 import WelcomeText from "../components/WelcomeText.jsx";
 import Score from "../components/Score.jsx";
 import Skeleton from "../components/Skeleton.jsx";
+import Instructions from "../components/Instructions.jsx";
+import { CONTROL_CONFIG } from "../constants/controlConfig";
+import { useGameControls } from "../hooks/useGameControls";
 
 export default function GrammarPage() {
   const [conjugations, setConjugations] = useState([]);
@@ -18,43 +18,54 @@ export default function GrammarPage() {
     numQs: "",
     tense: "",
   });
-  const correctAnswers = conjugations.map((item) => item.answer);
-  const [score, setScore] = useState(0)
-
+  const [score, setScore] = useState(0);
   const [isSiteLoading, setIsSiteLoading] = useState(false);
-  const [loadError, setLoadError] = useState();
- 
 
-  const splitSentence = (sentence) => {
-    const newSentence = sentence.split("_____");
-    return newSentence;
-  };
+  const controlConfig = CONTROL_CONFIG.grammar;
 
+  const {
+    difficulty,
+    numQuestions,
+    tense,
+    setDifficulty,
+    setNumQuestions,
+    setTense,
+    handleGenerate,
+  } = useGameControls({
+    gameType: "grammar",
+    onConjugations: setConjugations,
+    onGameSettings: setSettings,
+    onSiteLoading: setIsSiteLoading,
+  });
 
-  const checkResponses = (responses) => {
-    const results = []
+  const correctAnswers = conjugations.map((item) => item.answer);
+
+  const splitSentence = (sentence) => sentence.split("_____");
+
+  const checkResponses = () => {
+    const results = [];
     for (const [key, value] of Object.entries(userAnswers)) {
       results.push(correctAnswers[key] === value);
     }
-    setBooleanResponses(results)
+    setBooleanResponses(results);
+
     const totalQs = conjugations.length;
     let count = 0;
-    for (let i = 0; i < conjugations.length; ++i) {
-      if (results[i]) {
+    for (let index = 0; index < conjugations.length; index += 1) {
+      if (results[index]) {
         count += 1;
       }
     }
-    const total =  (count / totalQs) * 100;
-    setScore(total)
-  }
+
+    const total = (count / totalQs) * 100;
+    setScore(total);
+  };
 
   useEffect(() => {
-    setBooleanResponses([])
-    setUserAnswers({})
-    setScore(0)
-  }, [conjugations])
-  
-  
+    setBooleanResponses([]);
+    setUserAnswers({});
+    setScore(0);
+  }, [conjugations]);
 
   return (
     <>
@@ -62,22 +73,28 @@ export default function GrammarPage() {
 
       <div className="flex gap-4 bg-slate-300 ">
         <Controls
-          gameType={"grammar"}
-          conjugationsHandler={setConjugations}
-          gameSettings={setSettings}
-          siteError={setLoadError}
-          siteLoading={setIsSiteLoading}
+          title={controlConfig.title}
+          difficulty={difficulty}
+          onDifficultyChange={setDifficulty}
+          numQuestions={numQuestions}
+          questionOptions={controlConfig.questionOptions}
+          onNumQuestionsChange={setNumQuestions}
+          tense={tense}
+          tenseOptions={controlConfig.tenseOptions}
+          onTenseChange={setTense}
+          showTense={controlConfig.showTense}
+          showTopic={controlConfig.showTopic}
+          showSearch={controlConfig.showSearch}
+          showQuestionOptions={controlConfig.showQuestionOptions}
+          generateLabel={controlConfig.generateLabel}
+          onGenerate={handleGenerate}
         />
 
         <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
-          <PageCard
-            text={"Grammar Practice"}
-            bgColor={"#e74d3ce3"}
-            borderColor={"white"}
-          ></PageCard>
+          <PageCard text="Grammar Practice" bgColor="#e74d3ce3" borderColor="white" />
 
           <WelcomeText
-            heading={"Welcome to Reading Comphresion Practice"}
+            heading="Welcome to Reading Comphresion Practice"
             text={`On this page, you get to take control of your learning. Use the
                 panel on the left to choose how tough you want your passage to
                 be — Beginner, Intermediate, or Advanced — and then pick how
@@ -86,34 +103,21 @@ export default function GrammarPage() {
                 with comprehension questions to test your skills. It’s a fun,
                 interactive way to boost your reading and critical thinking — so
                 pick your settings and let’s get reading!`}
-          ></WelcomeText>
+          />
 
-          <Score
-            gameType={"grammar"}
-            scoreColor={"#e74c3c"}
-            settings={settings}
-            score={score}
-          ></Score>
+          <Score gameType="grammar" scoreColor="#e74c3c" settings={settings} score={score} />
 
-          <Instructions title="Fill in the Blanks" titleColor={"#e74c3c"}>
-            {isSiteLoading && (
-              <>
-                <Skeleton></Skeleton>
-              </>
-            )}
+          <Instructions title="Fill in the Blanks" titleColor="#e74c3c">
+            {isSiteLoading && <Skeleton />}
             {conjugations?.length > 0 &&
               conjugations.map((question, index) => (
                 <div className="p-3" key={index}>
-                  <h3 className="text-[#e74c3c] font-bold text-xl">
-                    Exercise {index + 1}
-                  </h3>
+                  <h3 className="text-[#e74c3c] font-bold text-xl">Exercise {index + 1}</h3>
                   <div
                     className="rounded-md bg-[#f8f9fa] border-2 border-[#e9ecef] p-4 hover:border-[#e74c3c]"
                     style={{
                       borderColor:
-                        booleanResponses[index] && booleanResponses?.length > 0
-                          ? "green"
-                          : "red",
+                        booleanResponses[index] && booleanResponses?.length > 0 ? "green" : "red",
                     }}
                   >
                     <label>
@@ -122,18 +126,17 @@ export default function GrammarPage() {
                         type="text"
                         className="border-2 border-[#e74c3c] rounded-md"
                         value={userAnswers[index] ?? ""}
-                        onChange={(e) =>
+                        onChange={(event) =>
                           setUserAnswers({
                             ...userAnswers,
-                            [index]: e.target.value,
+                            [index]: event.target.value,
                           })
                         }
-                      ></input>
+                      />
                       {splitSentence(question.sentence)[1]}
                     </label>
                     <p className="border-t-2 mt-2 max-w-100">
-                      <em className="font-bold text-normal">Translation:</em>{" "}
-                      {question.translation}
+                      <em className="font-bold text-normal">Translation:</em> {question.translation}
                     </p>
                   </div>
                 </div>
@@ -142,15 +145,14 @@ export default function GrammarPage() {
               {conjugations?.length > 0 && (
                 <button
                   className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-600"
-                  onClick={() => checkResponses()}
+                  type="button"
+                  onClick={checkResponses}
                 >
                   Submit All
                 </button>
               )}
             </div>
-            <p className="text-center">
-              Question's content was generated by ChatGPT.
-            </p>
+            <p className="text-center">Question&apos;s content was generated by ChatGPT.</p>
           </Instructions>
         </div>
       </div>
