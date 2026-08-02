@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import NavigationMenu from "../components/NavigationMenu.jsx";
 import Controls from "../components/Controls.jsx";
-import PageCard from "../components/PageCard.jsx";
 import WelcomeText from "../components/WelcomeText.jsx";
 import Instructions from "../components/Instructions.jsx";
 import Score from "../components/Score.jsx";
 import Error from "../components/Error.jsx";
+import { Button } from "@/components/ui/button";
 import { CONTROL_CONFIG } from "../constants/controlConfig";
 import { useGameControls } from "../hooks/useGameControls";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ReadingPage() {
   const [readingData, setReadingData] = useState({});
@@ -16,6 +17,7 @@ export default function ReadingPage() {
   const [score, setScore] = useState(0);
   const [settings, setSettings] = useState({});
   const [isSiteError, setIsSiteError] = useState(false);
+  const { t } = useLanguage();
 
   const controlConfig = CONTROL_CONFIG.reading;
 
@@ -35,6 +37,14 @@ export default function ReadingPage() {
     onGameSettings: setSettings,
     onSiteError: setIsSiteError,
   });
+
+  const fieldValues = { topic, searchText };
+  const fieldSetters = { topic: setTopic, searchText: setSearchText };
+  const fields = controlConfig.fields.map((field) => ({
+    ...field,
+    value: fieldValues[field.key],
+    onChange: fieldSetters[field.key],
+  }));
 
   const correctAnswers = useMemo(() => {
     if (!readingData || !readingData.questions?.length) {
@@ -73,51 +83,32 @@ export default function ReadingPage() {
     <>
       <NavigationMenu />
 
-      <div className="flex gap-4 bg-slate-300 ">
+      <div className="flex gap-4 bg-muted min-h-screen">
         <Controls
           title={controlConfig.title}
+          fields={fields}
           difficulty={difficulty}
           onDifficultyChange={setDifficulty}
           numQuestions={numQuestions}
           questionOptions={controlConfig.questionOptions}
           onNumQuestionsChange={setNumQuestions}
-          topic={topic}
-          topicOptions={controlConfig.topicOptions}
-          onTopicChange={setTopic}
-          topicLabel={controlConfig.topicLabel}
-          searchText={searchText}
-          onSearchTextChange={setSearchText}
-          showTense={controlConfig.showTense}
-          showTopic={controlConfig.showTopic}
-          showSearch={controlConfig.showSearch}
-          showQuestionOptions={controlConfig.showQuestionOptions}
           generateLabel={controlConfig.generateLabel}
           onGenerate={handleGenerate}
         />
 
-        <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
-          <PageCard text="Reading Comprehension" bgColor="oklch(70.7% 0.165 254.624)" />
-
+        <div className="space-y-4 mt-2 p-4 w-full max-w-7xl mx-auto">
           <WelcomeText
-            heading="Welcome to Reading Comphresion Practice"
-            text={` On this page, you get to take control of your learning. Use
-                    the panel on the left to choose how tough you want your
-                    passage to be — Beginner, Intermediate, or Advanced — and
-                    then pick how many questions you're ready to tackle (3, 5,
-                    or 8). Once you're set, we'll generate a unique reading
-                    passage just for you, along with comprehension questions to
-                    test your skills. It’s a fun, interactive way to boost your
-                    reading and critical thinking — so pick your settings and
-                    let’s get reading!`}
+            heading="Reading Comprehension"
+            text="Use the panel on the left to choose how tough you want your passage to be — Beginner, Intermediate, or Advanced — and pick how many questions you're ready to tackle. We'll generate a unique reading passage along with comprehension questions to test your skills."
           />
 
-          <Score settings={settings} scoreColor="oklch(70.7% 0.165 254.624)" score={score} />
+          <Score settings={settings} scoreColor="var(--accent-foreground)" score={score} />
 
           <Instructions
             title="Reading Passage"
             text={readingData != null ? readingData.content : ""}
             textTitle={readingData != null ? readingData.title : ""}
-            titleColor="oklch(70.7% 0.165 254.624)"
+            titleColor="var(--accent-foreground)"
           >
             {isSiteError ? (
               <Error />
@@ -126,27 +117,28 @@ export default function ReadingPage() {
                 <>
                   {readingData.questions.map((question, index) => (
                     <div
-                      className="p-4 bg-white border-2 border-[#dee2e6] rounded-md m-2"
+                      className="p-4 bg-background border-2 rounded-2xl m-2"
                       style={{
                         borderColor:
                           booleanResponses[index] && booleanResponses?.length > 0
-                            ? "green"
-                            : "oklch(70.7% 0.165 254.624)",
+                            ? "var(--success)"
+                            : "var(--border)",
                       }}
                       key={index}
                     >
-                      <h2 className="font-bold text-2xl mb-1 text-[#2c3e50]">Question {index + 1}</h2>
+                      <h2 className="font-bold text-xl mb-1">
+                        {t.common.question} {index + 1}
+                      </h2>
 
-                      <p className="mb-4 text-xl">{question.question}</p>
+                      <p className="mb-4 text-base">{question.question}</p>
 
                       {Object.entries(question.options).map(([letter, optionText]) => (
-                        <div className="flex-col mb-8" key={letter}>
-                          <label className="border-2 border-[#e9ecef] px-5 py-3 rounded-lg bg-[#f8f9fa] hover:border-[#a6cbef]">
+                        <div className="flex-col mb-3" key={letter}>
+                          <label className="flex items-center gap-2 border rounded-xl px-4 py-2.5 bg-muted/50 hover:border-accent-foreground cursor-pointer">
                             <input
                               type="radio"
                               name={`question-${index}`}
                               value={letter}
-                              className="px-4 ml-2"
                               onChange={() =>
                                 setUserAnswers({
                                   ...userAnswers,
@@ -165,13 +157,13 @@ export default function ReadingPage() {
             )}
             <div className="text-center">
               {readingData?.questions?.length > 0 && (
-                <button
-                  className="inline border-2 border-black bg-green-500 p-2 rounded-lg w-[250px] mb-3 text-white font-bold hover:bg-green-600"
+                <Button
                   type="button"
                   onClick={checkResponses}
+                  className="rounded-full w-[250px] mb-3 bg-success text-success-foreground hover:bg-success/90"
                 >
-                  Submit All
-                </button>
+                  {t.common.submitAll}
+                </Button>
               )}
             </div>
           </Instructions>

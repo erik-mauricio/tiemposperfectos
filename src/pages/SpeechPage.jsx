@@ -4,9 +4,15 @@ import NavigationMenu from "../components/NavigationMenu.jsx";
 import Controls from "../components/Controls.jsx";
 import Instructions from "../components/Instructions.jsx";
 import WelcomeText from "../components/WelcomeText.jsx";
-import PageCard from "../components/PageCard.jsx";
+import { Button } from "@/components/ui/button";
 import { CONTROL_CONFIG } from "../constants/controlConfig";
 import { useGameControls } from "../hooks/useGameControls";
+
+const ACCENT_COLOR = "oklch(0.6 0.15 300)";
+const BUBBLE_COLOR_BY_TYPE = {
+  ai: "oklch(0.92 0.05 300)",
+  user: "oklch(0.92 0.05 210)",
+};
 
 export default function SpeechPage() {
   const [messages, setMessages] = useState([]);
@@ -27,6 +33,12 @@ export default function SpeechPage() {
     onPrompt: setPrompt,
     onGameSettings: setSettings,
   });
+
+  const fields = controlConfig.fields.map((field) => ({
+    ...field,
+    value: topic,
+    onChange: setTopic,
+  }));
 
   const aiSpeaking = (text) =>
     new Promise((resolve) => {
@@ -183,41 +195,25 @@ export default function SpeechPage() {
     <>
       <NavigationMenu />
 
-      <div className="flex gap-4 bg-slate-300 ">
+      <div className="flex gap-4 bg-muted min-h-screen">
         <Controls
           title={controlConfig.title}
+          fields={fields}
           difficulty={difficulty}
           onDifficultyChange={setDifficulty}
-          topic={topic}
-          topicOptions={controlConfig.topicOptions}
-          topicLabel={controlConfig.topicLabel}
-          onTopicChange={setTopic}
-          showTense={controlConfig.showTense}
-          showTopic={controlConfig.showTopic}
-          showSearch={controlConfig.showSearch}
-          showQuestionOptions={controlConfig.showQuestionOptions}
           generateLabel={controlConfig.generateLabel}
           onGenerate={handleGenerate}
         />
 
-        <div className="space-y-3 mt-2 p-4 w-full max-w-7xl mx-auto">
-          <PageCard text="Speech Practice" bgColor="oklch(70.2% 0.183 293.541)" borderColor="#fff" />
-
+        <div className="space-y-4 mt-2 p-4 w-full max-w-7xl mx-auto">
           <WelcomeText
             heading="Speech Practice"
-            text={`On this page, you get to take control of your learning. Use the
-                panel on the left to choose how tough you want your passage to
-                be — Beginner, Intermediate, or Advanced — and then pick how
-                many questions you're ready to tackle (3, 5, or 8). Once you're
-                set, we'll generate a unique reading passage just for you, along
-                with comprehension questions to test your skills. It’s a fun,
-                interactive way to boost your reading and critical thinking — so
-                pick your settings and let’s get reading!`}
+            text="Use the panel on the left to choose a topic and difficulty level. We'll start a live conversation — listen to the prompt, respond out loud, and get instant feedback to build your speaking confidence."
           />
 
           <Instructions
             title="Live Conversation Practice"
-            titleColor="oklch(70.2% 0.183 293.541)"
+            titleColor={ACCENT_COLOR}
             text={prompt.title}
           >
             <div className="space-y-2 flex-col justify-between">
@@ -231,64 +227,69 @@ export default function SpeechPage() {
                     }}
                   >
                     <div
-                      className="rounded-lg border-2 border-purple-300 p-4 max-w-150"
+                      className="rounded-2xl border p-4 max-w-150"
                       style={{
-                        backgroundColor:
-                          response.type === "ai"
-                            ? "oklch(81.1% 0.111 293.571)"
-                            : "oklch(70.7% 0.165 254.624)",
+                        backgroundColor: BUBBLE_COLOR_BY_TYPE[response.type],
+                        borderColor: "var(--border)",
                       }}
                     >
                       <div className="flex justify-between">
-                        <h3 className="font-bold text-xl">{response.type}</h3>
-                        <p>{response.timestamp}</p>
+                        <h3 className="font-bold text-lg capitalize">{response.type}</h3>
+                        <p className="text-sm text-muted-foreground">{response.timestamp}</p>
                       </div>
 
-                      <p className="text-lg">{response.content}</p>
+                      <p className="text-base">{response.content}</p>
                     </div>
                   </div>
                 ))}
             </div>
 
             <div className="text-center">
-              <h1 className="text-2xl">
+              <h1 className="text-2xl font-semibold">
                 Congrats on finishing this practice session! Below is your feedback
               </h1>
 
-              <h2 className="semi-bold text-xl">Feedback:</h2>
+              <h2 className="font-semibold text-xl mt-1">Feedback:</h2>
             </div>
 
-            <div className="flex-col justify-items-center mt-2 ">
-              <div className="flex-col p-5 border-2 rounded-lg justify-items-center max-w-150 min-w-100 border-purple-500 align-middle space-y-2">
-                <h3 className="block w-40 h-40 rounded-full bg-purple-400 text-center font-bold text-6xl p-12">
+            <div className="flex-col justify-items-center mt-4">
+              <div className="flex-col p-5 border rounded-2xl justify-items-center max-w-150 min-w-100 align-middle space-y-3 bg-muted/50">
+                <h3
+                  className="flex items-center justify-center size-32 rounded-full text-white text-center font-bold text-5xl"
+                  style={{ backgroundColor: ACCENT_COLOR }}
+                >
                   {time}
                 </h3>
-                <p>Seconds to respond</p>
+                <p className="text-sm text-muted-foreground">Seconds to respond</p>
 
                 {!isRecording && (
-                  <button
-                    className="block rounded-lg bg-purple-300 p-2 font-bold text-2xl text-center hover:bg-purple-400"
+                  <Button
                     type="button"
                     onClick={beginRecording}
+                    className="rounded-full px-6"
+                    style={{ backgroundColor: ACCENT_COLOR }}
                   >
                     Start Recording
-                  </button>
+                  </Button>
                 )}
 
                 {isRecording && (
                   <div className="flex gap-4">
-                    <button
-                      className="block rounded-lg bg-purple-300 p-2 font-bold text-2xl text-center hover:bg-purple-400"
+                    <Button
                       type="button"
                       onClick={endRecording}
+                      className="rounded-full px-6"
+                      style={{ backgroundColor: ACCENT_COLOR }}
                     >
                       End Recording
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
             </div>
-            <p className="text-center">Question&apos;s content was generated by ChatGPT.</p>
+            <p className="text-center text-sm text-muted-foreground">
+              Question&apos;s content was generated by ChatGPT.
+            </p>
           </Instructions>
         </div>
       </div>

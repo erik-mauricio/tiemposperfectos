@@ -1,105 +1,80 @@
 import NavigationMenu from "../components/NavigationMenu.jsx";
-import { Link } from "react-router-dom";
-import { CircleCheckBig } from "lucide-react";
-import { ChevronDown } from "lucide-react";
 import PageDescription from "../components/PageDescription.jsx";
-import { BookOpen } from "lucide-react";
+import { CircleCheckBig, BookOpen, Mic, BookText } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function HomePage() {
-    return (
-      <>
-        <NavigationMenu />
-        <div className="min-h-screen text-slate-800 w-full mx-auto ">
-          <div className="bg-[rgb(255,107,107)]  max-w-full p-4 text-slate-900 space-y-4 w-full">
-            <h1 className="text-slate-900 text-5xl font-bold">
-              Learning Spanish? Getting ready for AP Tests
-            </h1>
+  const { t } = useLanguage();
 
-            <p className="text-xl">
-              Use TiemposPefectos to master grammar conjugations, reading
-              comprehension, and practice live conversations for accelerated
-              Spanish fluency.
-            </p>
+  return (
+    <>
+      <NavigationMenu />
+      <div className="min-h-screen text-foreground w-full mx-auto bg-background">
+        <div className="bg-gradient-to-br from-primary to-orange-400 max-w-full px-6 sm:px-14 py-16 text-primary-foreground space-y-6 w-full">
+          <h1 className="text-4xl sm:text-6xl font-bold leading-tight max-w-3xl">
+            {t.home.heroTitle}
+          </h1>
 
-            <div className="border-3 border-slate-500 rounded-md p-4 bg-orange-100 space-y-2">
-              <div className="flex gap-2">
-                <CircleCheckBig />
-                <p className="text-slate-800 text-xl">
-                  Adaptive difficulty levels
-                </p>
-              </div>
+          <p className="text-xl max-w-2xl text-primary-foreground/90">
+            {t.home.heroText}
+          </p>
 
-              <div className="flex gap-2">
-                <CircleCheckBig />
-                <p className="text-slate-800 text-xl">
-                  Real-time speech recognition
-                </p>
-              </div>
+          
+        </div>
 
-              <div className="flex gap-2">
-                <CircleCheckBig />
-                <p className="text-slate-800 text-xl">
-                  Instant feedback & scoring
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="max-w-6xl mx-auto px-6 py-16 text-center space-y-3">
+          <h2 className="text-4xl font-bold">{t.home.chooseTitle}</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            {t.home.chooseText}
+          </p>
 
-          <div className="bg-orange-100 max-w-full p-4 text-center space-y-2">
-            <h2 className="text-4xl font-bold">Choose Your Adventure</h2>
-
-            <p>
-              Learn from three different modolues each with customizability and
-              interactivty from quizzes to real-time conversation practice.{" "}
-            </p>
-
+          <div className="grid md:grid-cols-3 gap-6 pt-8 text-left">
             <PageDescription
-              title={"Grammar"}
-              titleIcon={<BookOpen />}
-              text={`Master Spanish grammar  conjugation with
-               fill-in-the-blank exercises that personalized to desired level of difficulty.`}
+              title="Grammar"
+              text="Master Spanish grammar conjugation with fill-in-the-blank exercises personalized to your desired level of difficulty."
               details={[
                 "Multiple tense options available",
                 "Instant accuracy score",
                 "Customizable question sets (5-15)",
               ]}
-              bgColor={"#ff6b6b"}
-              pageLink={"/grammar"}
-            ></PageDescription>
+              bgColor="var(--card)"
+              pageLink="/grammar"
+              ctaLabel={t.common.startPracticing}
+            />
 
             <PageDescription
-              title={"Speech"}
-              titleIcon={<BookOpen />}
-              text={`Gain confidence in speaking abilites through real-tme Spanish conversations .`}
+              title="Speech"
+              text="Gain confidence in speaking abilities through real-time Spanish conversations."
               details={[
                 "Simulates AP Spanish speaking conversations with 20 second intervals",
                 "AI conversation partners",
                 "Topic filtering or live search to find what YOU want to practice speaking about",
               ]}
-              bgColor={"#4ecdc4"}
-              pageLink={"/speech"}
-            ></PageDescription>
+              bgColor="var(--card)"
+              pageLink="/speech"
+              ctaLabel={t.common.startPracticing}
+            />
 
             <PageDescription
-              title={"Reading"}
-              titleIcon={<BookOpen />}
-              text={`Master Spanish grammar  conjugation with
-               fill-in-the-blank exercises that personalized to desired level of difficulty.`}
+              title="Reading"
+              text="Build reading comprehension with generated passages and multiple-choice questions tailored to your level."
               details={[
-                "Multiple tense options available",
+                "Multiple topic options available",
                 "Instant accuracy score",
-                "Customizable question sets (5-15)",
+                "Customizable question sets (3-8)",
               ]}
-              bgColor={"#45b7d1"}
-              pageLink={"/reading"}
-            ></PageDescription>
-          </div>
-
-          <div className="bg-[#2c3e50]  max-w-full p-4 text-white text-center min-h-full">
-            <p className="text-white">Developed by Erik Mauricio</p>
-            <p>Github</p>
+              bgColor="var(--card)"
+              pageLink="/reading"
+              ctaLabel={t.common.startPracticing}
+            />
           </div>
         </div>
-      </>
-    );
+
+        <div className="bg-sidebar max-w-full px-6 py-8 text-sidebar-foreground text-center">
+          <p className="font-medium">{t.home.footer}</p>
+          <p className="text-sidebar-foreground/70">Github</p>
+        </div>
+      </div>
+    </>
+  );
 }
