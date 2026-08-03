@@ -13,8 +13,7 @@ class Concept(Base):
     parent_id = Column(UUID(as_uuid=True), ForeignKey("concepts.id"), nullable=True)
     category = Column(Text)
     difficulty = Column(SmallInteger)
-    description = Column(Text)
-    extra_metadata = Column("metadata", JSONB, default={})
+    extra_metadata = Column("metadata", JSONB, nullable=False, default=dict, server_default="{}")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -23,7 +22,8 @@ class Exercise(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     type = Column(Text, nullable=False)
     prompt = Column(JSONB, nullable=False)
-    media_url = Column(Text)
+    topic = Column(Text)
+    cefr_level = Column(Text)
     accepted_answers = Column(JSONB)
     explanation = Column(Text)
     difficulty = Column(Float, nullable=False)
@@ -33,8 +33,12 @@ class Exercise(Base):
 
 class ExerciseConcept(Base):
     __tablename__ = "exercise_concepts"
-    exercise_id = Column(UUID(as_uuid=True), ForeignKey("exercises.id"), primary_key=True)
-    concept_id = Column(UUID(as_uuid=True), ForeignKey("concepts.id"), primary_key=True)
+    exercise_id = Column(
+        UUID(as_uuid=True), ForeignKey("exercises.id", ondelete="CASCADE"), primary_key=True
+    )
+    concept_id = Column(
+        UUID(as_uuid=True), ForeignKey("concepts.id", ondelete="CASCADE"), primary_key=True
+    )
     weight = Column(Float, default=1.0)
 
 class Conversation(Base):
