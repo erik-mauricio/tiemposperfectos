@@ -73,3 +73,18 @@ class LearningEvent(Base):
     event_type = Column(Text, nullable=False)
     payload = Column(JSONB, nullable=False)
     occurred_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class DetectedError(Base):
+    __tablename__ = "detected_errors"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    attempt_id = Column(
+        UUID(as_uuid=True), ForeignKey("attempts.id", ondelete="CASCADE"), nullable=False
+    )
+    concept_id = Column(UUID(as_uuid=True), ForeignKey("concepts.id"), nullable=True)
+    error_type = Column(Text, nullable=False)
+    confidence = Column(Float)
+    text_span = Column(JSONB)
+    correction = Column(Text)
+    model_version = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

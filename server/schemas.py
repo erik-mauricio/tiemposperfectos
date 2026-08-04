@@ -36,11 +36,20 @@ class AttemptIn(BaseModel):
     hints_used: int = 0
 
 
+class DetectedErrorOut(BaseModel):
+    label: str
+    concept: str | None
+    text_span: Any
+    suggested_correction: str | None
+    confidence: float | None
+
+
 class AttemptOut(BaseModel):
     id: uuid.UUID
     exercise_id: uuid.UUID
     correct: bool
     score: float
     explanation: str | None
+    errors: list[DetectedErrorOut] = []
 
     model_config = {"from_attributes": True}
