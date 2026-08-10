@@ -28,3 +28,28 @@ dist-ssr
 
 # Local-only notes
 LOCAL_PR_SUMMARY.md
+
+# Legacy code stashed during Phase 1 cleanup
+server/legacy_spanish_app.py.bak
+
+# Documentation (not yet ready to commit)
+docs/
+
+# Downloaded NLTK data (fetched on first run, not source)
+ml/.nltk_data/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Trained artifacts / model registry (produced by ml/training/*, stays
+# local per the "inference locally, training separately" principle;
+# server/ only needs a registry entry + artifact to exist on disk)
+ml/artifacts/
+ml/registry/
+
+# W&I+LOCNESS corpus (BEA-2019): non-commercial, no-redistribution license
+# — must never be committed to this publicly cloneable repo. errors_v2.jsonl
+# is derived from it and inherits the same restriction.
+ml/datasets/wi+locness/
+ml/datasets/errors_v2.jsonl

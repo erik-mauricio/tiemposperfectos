@@ -1,0 +1,35 @@
+{"text": "He go to school every day.", "labels": ["subject_verb_agreement"]}
+{"text": "She like pizza a lot.", "labels": ["subject_verb_agreement"]}
+{"text": "It run very fast.", "labels": ["subject_verb_agreement"]}
+{"text": "He have three dogs at home.", "labels": ["subject_verb_agreement"]}
+{"text": "She do her homework every night.", "labels": ["subject_verb_agreement"]}
+{"text": "I go to the park yesterday.", "labels": ["verb_tense"]}
+{"text": "We eat dinner last night at the new restaurant.", "labels": ["verb_tense"]}
+{"text": "They buy a new car last year.", "labels": ["verb_tense"]}
+{"text": "I go to the store two days ago.", "labels": ["verb_tense"]}
+{"text": "She eats breakfast last week with her friends.", "labels": ["verb_tense"]}
+{"text": "I saw a elephant at the zoo.", "labels": ["article_usage"]}
+{"text": "He is an university student.", "labels": ["article_usage"]}
+{"text": "She bought an honest and reliable car.", "labels": ["article_usage"]}
+{"text": "We waited for a hour before the show started.", "labels": ["article_usage"]}
+{"text": "That is a unicorn made of glass.", "labels": ["article_usage"]}
+{"text": "I have lived here since three years.", "labels": ["preposition_usage"]}
+{"text": "She has worked at that company since five months.", "labels": ["preposition_usage"]}
+{"text": "They have known each other since two weeks.", "labels": ["preposition_usage"]}
+{"text": "He has been studying English since four years.", "labels": ["preposition_usage"]}
+{"text": "We have lived in this city since ten years.", "labels": ["preposition_usage"]}
+{"text": "I have three cat in my apartment.", "labels": ["pluralization"]}
+{"text": "She bought five apple at the market.", "labels": ["pluralization"]}
+{"text": "There are seven book on the shelf.", "labels": ["pluralization"]}
+{"text": "He has two brother and one sister.", "labels": ["pluralization"]}
+{"text": "We saw ten bird in the park.", "labels": ["pluralization"]}
+{"text": "Running very fast today.", "labels": ["sentence_fragment"]}
+{"text": "Because it was raining outside.", "labels": ["sentence_fragment"]}
+{"text": "The big red house near the lake.", "labels": ["sentence_fragment"]}
+{"text": "Very tired after a long day.", "labels": ["sentence_fragment"]}
+{"text": "Under the old wooden bridge.", "labels": ["sentence_fragment"]}
+{"text": "He go to work yesterday and forget his keys.", "labels": ["subject_verb_agreement", "verb_tense"]}
+{"text": "She finished her homework before dinner.", "labels": []}
+{"text": "The children played happily in the park all afternoon.", "labels": []}
+{"text": "We visited our grandparents last weekend and had a great time.", "labels": []}
+{"text": "He carefully read the instructions before starting the project.", "labels": []}
