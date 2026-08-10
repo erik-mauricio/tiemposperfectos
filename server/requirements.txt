@@ -6,3 +6,5 @@ alembic
 python-dotenv
 python-socketio
 openai
+scikit-learn
+joblib

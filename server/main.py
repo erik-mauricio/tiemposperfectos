@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from mistake_detection import detect_errors
+from tfidf_classifier import predict_errors
 from models import Attempt, Concept, DetectedError, Exercise, ExerciseConcept, LearningEvent
 from schemas import AttemptIn, AttemptOut, ConceptOut, DetectedErrorOut, ExerciseOut
 
@@ -217,15 +218,32 @@ def submit_attempt(attempt_in: AttemptIn, db: Session = Depends(get_db)):
     detected = []
     if exercise.type in FREE_TEXT_EXERCISE_TYPES:
         detection_result = detect_errors(submitted_text)
-        concept_slugs = {
-            e["concept"] for e in detection_result["errors"] if e["concept"]
-        }
+        rule_errors = detection_result["errors"]
+
+        # The TF-IDF classifier (3c eval: macro F1 0.30, 1.0 false-positive
+        # rate on clean examples) is not reliable enough to run standalone —
+        # it would flag error-free submissions as often as not. The rules
+        # stay authoritative; the classifier only runs as a secondary pass
+        # on responses the rules already flagged, adding labels the rules
+        # missed rather than ever being the sole source of a finding.
+        classifier_errors = []
+        if rule_errors:
+            rule_labels = {e["label"] for e in rule_errors}
+            classifier_errors = [
+                e for e in predict_errors(submitted_text) if e["label"] not in rule_labels
+            ]
+
+        all_errors = [(e, detection_result["model_version"]) for e in rule_errors] + [
+            (e, "tfidf-v1") for e in classifier_errors
+        ]
+
+        concept_slugs = {e["concept"] for e, _ in all_errors if e["concept"]}
         concepts_by_slug = {
             c.slug: c
             for c in db.query(Concept).filter(Concept.slug.in_(concept_slugs)).all()
         } if concept_slugs else {}
 
-        for error in detection_result["errors"]:
+        for error, model_version in all_errors:
             concept = concepts_by_slug.get(error["concept"])
             db.add(
                 DetectedError(
@@ -235,7 +253,7 @@ def submit_attempt(attempt_in: AttemptIn, db: Session = Depends(get_db)):
                     confidence=error["confidence"],
                     text_span=error["text_span"],
                     correction=error["suggested_correction"],
-                    model_version=detection_result["model_version"],
+                    model_version=model_version,
                 )
             )
             detected.append(DetectedErrorOut(**error))
