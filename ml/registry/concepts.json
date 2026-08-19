@@ -1,0 +1,236 @@
+[
+  {
+    "slug": "verb_tense",
+    "name": "Verb Tense",
+    "category": "grammar",
+    "parent_slug": null,
+    "difficulty": 1,
+    "description": "Choosing the correct verb form to express when an action happens (present, past, future, ongoing).",
+    "example_errors": [
+      "She work every day. (missing -s in simple present)",
+      "I go to the store yesterday. (present used instead of past)",
+      "He will went tomorrow. (mixed future/past marking)"
+    ]
+  },
+  {
+    "slug": "simple_present",
+    "name": "Simple Present",
+    "category": "grammar",
+    "parent_slug": "verb_tense",
+    "difficulty": 1,
+    "description": "Used for habits, facts, and routines (e.g. 'She works every day').",
+    "example_errors": [
+      "She work every Saturday.",
+      "They is happy every morning.",
+      "He don't like coffee."
+    ]
+  },
+  {
+    "slug": "simple_past",
+    "name": "Simple Past",
+    "category": "grammar",
+    "parent_slug": "verb_tense",
+    "difficulty": 2,
+    "description": "Used for completed actions in the past (e.g. 'She worked yesterday').",
+    "example_errors": [
+      "I go to work yesterday.",
+      "She goed to the store.",
+      "Yesterday, she go to the store."
+    ]
+  },
+  {
+    "slug": "simple_future",
+    "name": "Simple Future",
+    "category": "grammar",
+    "parent_slug": "verb_tense",
+    "difficulty": 2,
+    "description": "Used for actions expected to happen later, typically with 'will' or 'going to' (e.g. 'She will call tomorrow').",
+    "example_errors": [
+      "She will calls tomorrow.",
+      "Tomorrow she call the doctor.",
+      "He going to arrives late."
+    ]
+  },
+  {
+    "slug": "present_continuous",
+    "name": "Present Continuous",
+    "category": "grammar",
+    "parent_slug": "verb_tense",
+    "difficulty": 2,
+    "description": "Used for actions happening right now or temporarily, formed with 'be' + verb-ing (e.g. 'She is working').",
+    "example_errors": [
+      "She working right now.",
+      "She is work right now.",
+      "They is eating dinner."
+    ]
+  },
+  {
+    "slug": "subject_verb_agreement",
+    "name": "Subject-Verb Agreement",
+    "category": "grammar",
+    "parent_slug": null,
+    "difficulty": 1,
+    "description": "Matching a verb's form to its subject (e.g. 'She works', not 'She work').",
+    "example_errors": [
+      "She work every day.",
+      "They is happy.",
+      "He don't like coffee."
+    ]
+  },
+  {
+    "slug": "article_usage",
+    "name": "Article Usage",
+    "category": "grammar",
+    "parent_slug": null,
+    "difficulty": 1,
+    "description": "Choosing between the indefinite articles 'a' and 'an' based on the sound that follows, and knowing when no article or 'the' is needed.",
+    "example_errors": [
+      "I saw a elephant.",
+      "She is a honest person.",
+      "I need a advice."
+    ]
+  },
+  {
+    "slug": "pronouns",
+    "name": "Pronouns",
+    "category": "grammar",
+    "parent_slug": null,
+    "difficulty": 2,
+    "description": "Using the correct pronoun form depending on its role in the sentence (subject, direct object, indirect object).",
+    "example_errors": [
+      "Give the book to I.",
+      "Her went to the store.",
+      "Me want to go home."
+    ]
+  },
+  {
+    "slug": "direct_object_pronouns",
+    "name": "Direct Object Pronouns",
+    "category": "grammar",
+    "parent_slug": "pronouns",
+    "difficulty": 2,
+    "description": "Pronouns that receive the action of the verb directly (me, you, him, her, it, us, them).",
+    "example_errors": [
+      "I saw she at the park.",
+      "He called I yesterday.",
+      "They invited we to the party."
+    ]
+  },
+  {
+    "slug": "indirect_object_pronouns",
+    "name": "Indirect Object Pronouns",
+    "category": "grammar",
+    "parent_slug": "pronouns",
+    "difficulty": 2,
+    "description": "Pronouns that indicate who benefits from or receives something (e.g. 'Give it to him').",
+    "example_errors": [
+      "Give the book to I.",
+      "She sent a letter to he.",
+      "Tell to she the answer."
+    ]
+  },
+  {
+    "slug": "word_order",
+    "name": "Word Order",
+    "category": "grammar",
+    "parent_slug": null,
+    "difficulty": 1,
+    "description": "Standard English subject-verb-object order (e.g. 'I eat rice').",
+    "example_errors": [
+      "Rice I eat.",
+      "Every day works she.",
+      "Yesterday to the store went she."
+    ]
+  },
+  {
+    "slug": "spelling",
+    "name": "Spelling",
+    "category": "writing",
+    "parent_slug": null,
+    "difficulty": 1,
+    "description": "Correctly spelling common English words, including irregular and frequently-confused forms.",
+    "example_errors": [
+      "recieve (should be receive)",
+      "definately (should be definitely)",
+      "seperate (should be separate)"
+    ]
+  },
+  {
+    "slug": "word_choice",
+    "name": "Word Choice",
+    "category": "writing",
+    "parent_slug": null,
+    "difficulty": 2,
+    "description": "Choosing the right word for the context, and avoiding missing or extra words that change or obscure meaning.",
+    "example_errors": [
+      "I am agree with you. (extra word 'am')",
+      "She very like ice cream. (wrong word order/choice for 'really')",
+      "He said me the truth. (wrong word, should be 'told')"
+    ]
+  },
+  {
+    "slug": "everyday_vocabulary",
+    "name": "Everyday Vocabulary",
+    "category": "vocabulary",
+    "parent_slug": null,
+    "difficulty": 1,
+    "description": "Common words used in daily life (e.g. food, family, weather).",
+    "example_errors": [
+      "Using 'umbrella' when the context calls for 'raincoat'.",
+      "Confusing 'borrow' and 'lend'.",
+      "Using 'make' instead of 'do' for chores (e.g. 'make homework')."
+    ]
+  },
+  {
+    "slug": "main_idea",
+    "name": "Main Idea",
+    "category": "reading",
+    "parent_slug": null,
+    "difficulty": 2,
+    "description": "Identifying the central point or purpose of a passage rather than a supporting detail.",
+    "example_errors": [
+      "Picking a minor detail as the passage's main idea.",
+      "Choosing an answer that is too broad or unrelated to the passage.",
+      "Confusing the topic sentence of one paragraph with the main idea of the whole passage."
+    ]
+  },
+  {
+    "slug": "detail_retrieval",
+    "name": "Detail Retrieval",
+    "category": "reading",
+    "parent_slug": null,
+    "difficulty": 1,
+    "description": "Locating and correctly recalling specific facts stated explicitly in a passage.",
+    "example_errors": [
+      "Reporting a number or name from the passage incorrectly.",
+      "Answering with information not actually stated in the passage.",
+      "Mixing up which character/subject a detail belongs to."
+    ]
+  },
+  {
+    "slug": "inference",
+    "name": "Reading Inference",
+    "category": "reading",
+    "parent_slug": null,
+    "difficulty": 3,
+    "description": "Drawing a reasonable conclusion from information implied, but not directly stated, in a passage.",
+    "example_errors": [
+      "Treating an inference question as if the answer were stated directly.",
+      "Drawing a conclusion the passage doesn't actually support.",
+      "Ignoring context clues that point to the intended implication."
+    ]
+  },
+  {
+    "slug": "vocabulary_in_context",
+    "name": "Vocabulary in Context",
+    "category": "reading",
+    "parent_slug": null,
+    "difficulty": 2,
+    "description": "Determining the meaning of a word or phrase from how it's used in the surrounding passage.",
+    "example_errors": [
+      "Using a word's most common meaning when the passage uses a less common one.",
+      "Ignoring surrounding context clues that narrow down the meaning.",
+      "Confusing a word with a similarly-spelled but unrelated word."
+    ]
+  }
+]

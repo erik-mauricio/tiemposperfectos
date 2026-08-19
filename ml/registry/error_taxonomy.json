@@ -1,0 +1,123 @@
+[
+  {
+    "label": "subject_verb_agreement",
+    "category": "grammar",
+    "concept_slugs": ["subject_verb_agreement"],
+    "description": "The verb form doesn't match its subject (e.g. 'She work' instead of 'She works').",
+    "examples": ["She work every day.", "They is happy.", "He don't like coffee."]
+  },
+  {
+    "label": "verb_tense",
+    "category": "grammar",
+    "concept_slugs": ["verb_tense", "simple_present", "simple_past", "simple_future", "present_continuous"],
+    "description": "The wrong tense is used for when the action happens.",
+    "examples": ["I go to the store yesterday.", "She goed to the store.", "She working right now."]
+  },
+  {
+    "label": "article_usage",
+    "category": "grammar",
+    "concept_slugs": ["article_usage"],
+    "description": "Incorrect or missing use of 'a', 'an', or 'the'.",
+    "examples": ["I saw a elephant.", "She is a honest person.", "I need a advice."]
+  },
+  {
+    "label": "pronoun_usage",
+    "category": "grammar",
+    "concept_slugs": ["pronouns", "direct_object_pronouns", "indirect_object_pronouns"],
+    "description": "The wrong pronoun form is used for its role in the sentence.",
+    "examples": ["Give the book to I.", "I saw she at the park.", "Me want to go home."]
+  },
+  {
+    "label": "preposition_usage",
+    "category": "grammar",
+    "concept_slugs": ["word_order"],
+    "description": "The wrong preposition is used, or one is missing/extra.",
+    "examples": ["I have lived here since three years.", "She is good in math.", "He arrived to the airport."]
+  },
+  {
+    "label": "pluralization",
+    "category": "grammar",
+    "concept_slugs": ["word_order"],
+    "description": "A noun's plural/singular form doesn't match how many there are.",
+    "examples": ["I have three dog.", "She bought two bread.", "There are many childs."]
+  },
+  {
+    "label": "sentence_fragment",
+    "category": "grammar",
+    "concept_slugs": ["word_order"],
+    "description": "The sentence is missing a finite verb or otherwise isn't a complete sentence.",
+    "examples": ["Because I was tired.", "Running to the store.", "The big red house on the hill."]
+  },
+  {
+    "label": "spelling",
+    "category": "writing",
+    "concept_slugs": ["spelling"],
+    "description": "A word is misspelled.",
+    "examples": ["recieve", "definately", "seperate"]
+  },
+  {
+    "label": "missing_word",
+    "category": "writing",
+    "concept_slugs": ["word_choice"],
+    "description": "A word necessary for the sentence's meaning or grammar is missing.",
+    "examples": ["I going to the store.", "She interested in music.", "He want play outside."]
+  },
+  {
+    "label": "wrong_word",
+    "category": "writing",
+    "concept_slugs": ["word_choice"],
+    "description": "A word is used that doesn't fit the intended meaning.",
+    "examples": ["He said me the truth.", "I am agree with you.", "She make her homework."]
+  },
+  {
+    "label": "extra_word",
+    "category": "writing",
+    "concept_slugs": ["word_choice"],
+    "description": "An unnecessary word is included that shouldn't be there.",
+    "examples": ["I am agree with you.", "She very like ice cream.", "He can to swim."]
+  },
+  {
+    "label": "main_idea",
+    "category": "reading",
+    "concept_slugs": ["main_idea"],
+    "description": "The response misidentifies the passage's central point.",
+    "examples": [
+      "Picking a minor detail as the passage's main idea.",
+      "Choosing an answer that is too broad or unrelated to the passage.",
+      "Confusing one paragraph's topic sentence with the whole passage's main idea."
+    ]
+  },
+  {
+    "label": "detail_retrieval",
+    "category": "reading",
+    "concept_slugs": ["detail_retrieval"],
+    "description": "The response misreports a fact that is explicitly stated in the passage.",
+    "examples": [
+      "Reporting a number or name from the passage incorrectly.",
+      "Answering with information not actually stated in the passage.",
+      "Mixing up which character/subject a detail belongs to."
+    ]
+  },
+  {
+    "label": "inference",
+    "category": "reading",
+    "concept_slugs": ["inference"],
+    "description": "The response draws a conclusion the passage doesn't actually support, or treats an implied point as directly stated (or vice versa).",
+    "examples": [
+      "Treating an inference question as if the answer were stated directly.",
+      "Drawing a conclusion the passage doesn't support.",
+      "Ignoring context clues that point to the intended implication."
+    ]
+  },
+  {
+    "label": "vocabulary_in_context",
+    "category": "reading",
+    "concept_slugs": ["vocabulary_in_context"],
+    "description": "The response misreads a word's meaning as used in the passage's context.",
+    "examples": [
+      "Using a word's most common meaning when the passage uses a less common one.",
+      "Ignoring surrounding context clues that narrow down the meaning.",
+      "Confusing a word with a similarly-spelled but unrelated word."
+    ]
+  }
+]
