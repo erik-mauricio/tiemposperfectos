@@ -1,15 +1,45 @@
+import json
 import re
+from pathlib import Path
 
 MODEL_VERSION = "rules-v1"
 
-ERROR_CONCEPT_MAP = {
-    "subject_verb_agreement": "subject_verb_agreement",
-    "verb_tense": "simple_past",
-    "article_usage": None,
-    "preposition_usage": None,
-    "pluralization": None,
-    "sentence_fragment": None,
+REPO_ROOT = Path(__file__).parent.parent
+ERROR_TAXONOMY_PATH = REPO_ROOT / "ml" / "registry" / "error_taxonomy.json"
+
+# The labels this module's rules can actually emit
+RULE_EMITTED_LABELS = {
+    "subject_verb_agreement",
+    "verb_tense",
+    "article_usage",
+    "preposition_usage",
+    "pluralization",
+    "sentence_fragment",
 }
+
+# A taxonomy entry's concept_slugs[0] is its default/primary concept.
+# Override here only where a rule's actual behavior targets something
+# narrower than that default.
+_PRIMARY_CONCEPT_OVERRIDES = {
+    "verb_tense": "simple_past",
+}
+
+
+def _load_error_concept_map() -> dict:
+    taxonomy = json.loads(ERROR_TAXONOMY_PATH.read_text())
+    by_label = {entry["label"]: entry for entry in taxonomy}
+
+    concept_map = {}
+    for label in RULE_EMITTED_LABELS:
+        entry = by_label.get(label)
+        if not entry or not entry["concept_slugs"]:
+            concept_map[label] = None
+            continue
+        concept_map[label] = _PRIMARY_CONCEPT_OVERRIDES.get(label, entry["concept_slugs"][0])
+    return concept_map
+
+
+ERROR_CONCEPT_MAP = _load_error_concept_map()
 
 THIRD_PERSON_SINGULAR_SUBJECTS = {"he", "she", "it"}
 
