@@ -6,12 +6,17 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import get_db
-from mistake_detection import detect_errors
-from tfidf_classifier import predict_errors
-from models import Attempt, Concept, DetectedError, Exercise, ExerciseConcept, LearningEvent
-from schemas import AttemptIn, AttemptOut, ConceptOut, DetectedErrorOut, ExerciseOut
-
-FREE_TEXT_EXERCISE_TYPES = {"sentence_correction", "free_response"}
+from learning_events import record_learning_event
+from models import Attempt, Concept, DetectedError, Exercise, ExerciseConcept
+from schemas import (
+    AttemptIn,
+    AttemptOut,
+    ConceptOut,
+    DetectedErrorOut,
+    ExerciseOut,
+    LearningEventIn,
+    LearningEventOut,
+)
 
 app = FastAPI()
 
@@ -139,33 +144,20 @@ def get_exercise(exercise_id: uuid.UUID, db: Session = Depends(get_db)):
     return exercise
 
 
-def _normalize(text: str) -> str:
-    """
-    Returns a new a whitespace-trimmed, lowercased version of `text`, used to
-    compare a learner's submitted answer against accepted answers
-    case-insensitively and ignoring leading/trailing spaces. 
- 
-    Parameters:
-        text: str — raw text to normalize, e.g. "  I went to the Park".
- 
-    Output:
-        str — the normalized text, e.g. "i went to the park".
-    """
-    return text.strip().lower()
-
-
 @app.post("/attempts", response_model=AttemptOut)
 def submit_attempt(attempt_in: AttemptIn, db: Session = Depends(get_db)):
     """
-    Records a learner's attempt and grades it by runing mistake detection for free-text exercises.
+    Records a learner's attempt and grades it by running mistake detection for free-text exercises.
 
     Preconditions: `attempt_in.exercise_id` must reference an existing exercise.
 
-    Side effects: inserts one `attempts` row and one `learning_events` row
-    (event_type="exercise_answered"). If `exercise.type` is in
-    `FREE_TEXT_EXERCISE_TYPES`, also inserts one `detected_errors` row per
-    error from `detect_errors()` (concept_id is None if the detected
-    concept slug doesn't match a `Concept`). Commits all inserts together.
+    Side effects: delegates to `learning_events.record_learning_event`,
+    which inserts one `learning_events` row (event_type="exercise_answered")
+    and one `error_labels` row per detected error; also inserts one
+    `attempts` row and, for backward compatibility with existing clients
+    of this endpoint, one `detected_errors` row per detected error
+    (concept_id is None if the detected concept slug doesn't match a
+    `Concept`). Commits all inserts together.
 
     Parameters:
         attempt_in: AttemptIn — user_id, exercise_id, response (dict with
@@ -175,88 +167,60 @@ def submit_attempt(attempt_in: AttemptIn, db: Session = Depends(get_db)):
     Returns:
         AttemptOut — id, exercise_id, correct, score, explanation, and
         errors (list of DetectedErrorOut, empty if not free-text or none
-        detected). `correct`/`score` come from an exact-match check
-        against `accepted_answers`, independent of detected errors.
+        detected).
 
     Raises:
         HTTPException(404): if no exercise matches `exercise_id`
     """
 
-    exercise = db.query(Exercise).filter(Exercise.id == attempt_in.exercise_id).first()
-    if not exercise:
-        raise HTTPException(status_code=404, detail="Exercise not found")
-
-    submitted_text = attempt_in.response.get("text", "")
-    accepted = exercise.accepted_answers or []
-    correct = _normalize(submitted_text) in {_normalize(a) for a in accepted}
-    score = 1.0 if correct else 0.0
+    result = record_learning_event(
+        db,
+        user_id=attempt_in.user_id,
+        exercise_id=attempt_in.exercise_id,
+        response=attempt_in.response,
+        response_time_ms=attempt_in.response_time_ms,
+        hint_used=attempt_in.hints_used > 0,
+        source="exercise",
+    )
 
     attempt = Attempt(
         user_id=attempt_in.user_id,
         exercise_id=attempt_in.exercise_id,
         response=attempt_in.response,
-        correct=correct,
-        score=score,
+        correct=result.is_correct,
+        score=result.score,
         response_time_ms=attempt_in.response_time_ms,
         hints_used=attempt_in.hints_used,
     )
     db.add(attempt)
-
-    db.add(
-        LearningEvent(
-            user_id=attempt_in.user_id,
-            event_type="exercise_answered",
-            payload={
-                "exercise_id": str(attempt_in.exercise_id),
-                "correct": correct,
-                "response_time_ms": attempt_in.response_time_ms,
-            },
-        )
-    )
     db.flush()
 
     detected = []
-    if exercise.type in FREE_TEXT_EXERCISE_TYPES:
-        detection_result = detect_errors(submitted_text)
-        rule_errors = detection_result["errors"]
-
-        # The TF-IDF classifier (3c eval: macro F1 0.30, 1.0 false-positive
-        # rate on clean examples) is not reliable enough to run standalone —
-        # it would flag error-free submissions as often as not. The rules
-        # stay authoritative; the classifier only runs as a secondary pass
-        # on responses the rules already flagged, adding labels the rules
-        # missed rather than ever being the sole source of a finding.
-        classifier_errors = []
-        if rule_errors:
-            rule_labels = {e["label"] for e in rule_errors}
-            classifier_errors = [
-                e for e in predict_errors(submitted_text) if e["label"] not in rule_labels
-            ]
-
-        all_errors = [(e, detection_result["model_version"]) for e in rule_errors] + [
-            (e, "tfidf-v1") for e in classifier_errors
-        ]
-
-        concept_slugs = {e["concept"] for e, _ in all_errors if e["concept"]}
-        concepts_by_slug = {
-            c.slug: c
-            for c in db.query(Concept).filter(Concept.slug.in_(concept_slugs)).all()
-        } if concept_slugs else {}
-
-        for error, model_version in all_errors:
-            concept = concepts_by_slug.get(error["concept"])
-            db.add(
-                DetectedError(
-                    attempt_id=attempt.id,
-                    concept_id=concept.id if concept else None,
-                    error_type=error["label"],
-                    confidence=error["confidence"],
-                    text_span=error["text_span"],
-                    correction=error["suggested_correction"],
-                    model_version=model_version,
-                )
+    for error in result.detected_errors:
+        db.add(
+            DetectedError(
+                attempt_id=attempt.id,
+                concept_id=(
+                    db.query(Concept).filter(Concept.slug == error.concept).first().id
+                    if error.concept
+                    else None
+                ),
+                error_type=error.label,
+                confidence=error.confidence,
+                text_span=error.text_span,
+                correction=error.suggested_correction,
+                model_version=error.model_version,
             )
-            detected.append(DetectedErrorOut(**error))
+        )
+        detected.append(
+            DetectedErrorOut(
+                label=error.label,
+                concept=error.concept,
+                text_span=error.text_span,
+                suggested_correction=error.suggested_correction,
+                confidence=error.confidence,
+            )
+        )
 
     db.commit()
     db.refresh(attempt)
@@ -266,8 +230,73 @@ def submit_attempt(attempt_in: AttemptIn, db: Session = Depends(get_db)):
         exercise_id=attempt.exercise_id,
         correct=attempt.correct,
         score=attempt.score,
-        explanation=exercise.explanation,
+        explanation=result.exercise.explanation,
         errors=detected,
+    )
+
+
+@app.post("/learning-events", response_model=LearningEventOut)
+def create_learning_event(event_in: LearningEventIn, db: Session = Depends(get_db)):
+    """
+    Records a learner's response to an exercise as a
+    LearningEvent, and grades it by running mistake detection for
+    free-text exercises.
+
+    Preconditions: `event_in.exercise_id` must reference an existing
+    exercise.
+
+    Side effects: delegates to `learning_events.record_learning_event`,
+    which inserts one `learning_events` row (event_type="exercise_answered")
+    and one `error_labels` row per detected error. Commits all inserts
+    together.
+
+    Parameters:
+        event_in: LearningEventIn — user_id, exercise_id, response (dict
+            with "text"), response_time_ms, hint_used. The client never
+            supplies correctness or target concepts; those are always
+            derived server-side by `record_learning_event`, so a client
+            can't arbitrarily assign mastery values.
+        db: Session — injected DB session.
+
+    Returns:
+        LearningEventOut — id, user_id, exercise_id, correct, score,
+        evaluation_method, explanation, and errors (list of
+        DetectedErrorOut, empty if not free-text or none detected).
+
+    Raises:
+        HTTPException(404): if no exercise matches `exercise_id`
+    """
+    result = record_learning_event(
+        db,
+        user_id=event_in.user_id,
+        exercise_id=event_in.exercise_id,
+        response=event_in.response,
+        response_time_ms=event_in.response_time_ms,
+        hint_used=event_in.hint_used,
+        source="exercise",
+    )
+
+    db.commit()
+    db.refresh(result.learning_event)
+
+    return LearningEventOut(
+        id=result.learning_event.id,
+        user_id=event_in.user_id,
+        exercise_id=event_in.exercise_id,
+        correct=result.is_correct,
+        score=result.score,
+        evaluation_method=result.evaluation_method,
+        explanation=result.exercise.explanation,
+        errors=[
+            DetectedErrorOut(
+                label=error.label,
+                concept=error.concept,
+                text_span=error.text_span,
+                suggested_correction=error.suggested_correction,
+                confidence=error.confidence,
+            )
+            for error in result.detected_errors
+        ],
     )
 
 
