@@ -2,10 +2,9 @@
 Shared write path for recording a learner's response to an exercise as
 one immutable LearningEvent used by both POST
 /learning-events and (internally) POST /attempts, so there's a single
-place that: looks up the exercise server-side, evaluates correctnessx, runs error detection for free-text types, and persists the
-event + any resulting ErrorLabel rows.
-
-
+place that: looks up the exercise server-side, evaluates correctness,
+runs error detection (rules + LLM) for free-text types, and persists
+the event + any resulting ErrorLabel rows.
 """
 
 from dataclasses import dataclass, field
@@ -16,6 +15,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from correctness import evaluate_correctness
+from llm_error_classifier import classify_errors
 from mistake_detection import detect_errors
 from models import Concept, ErrorLabel, Exercise, ExerciseConcept, LearningEvent
 
@@ -59,12 +59,29 @@ def record_learning_event(
     submitted_text = response.get("text", "")
     correctness = evaluate_correctness(exercise, submitted_text)
 
+    target_concepts = (
+        db.query(Concept)
+        .join(ExerciseConcept, ExerciseConcept.concept_id == Concept.id)
+        .filter(ExerciseConcept.exercise_id == exercise_id)
+        .all()
+    )
+    target_concept_ids = [str(concept.id) for concept in target_concepts]
+    target_concept_slugs = [concept.slug for concept in target_concepts]
+
     raw_errors = []
     if exercise.type in FREE_TEXT_EXERCISE_TYPES:
         detection_result = detect_errors(submitted_text)
-        raw_errors = [
+        raw_errors.extend(
             (error, detection_result["model_version"]) for error in detection_result["errors"]
-        ]
+        )
+
+        classification_result = classify_errors(
+            exercise.type, exercise.prompt, target_concept_slugs, submitted_text
+        )
+        raw_errors.extend(
+            (error, classification_result["model_version"])
+            for error in classification_result["errors"]
+        )
 
     error_concept_slugs = {error["concept"] for error, _ in raw_errors if error["concept"]}
     error_concepts_by_slug = (
@@ -75,13 +92,6 @@ def record_learning_event(
         if error_concept_slugs
         else {}
     )
-
-    target_concept_ids = [
-        str(concept_id)
-        for (concept_id,) in db.query(ExerciseConcept.concept_id).filter(
-            ExerciseConcept.exercise_id == exercise_id
-        )
-    ]
 
     learning_event = LearningEvent(
         user_id=user_id,
