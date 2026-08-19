@@ -109,6 +109,21 @@ class DetectedError(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
+class LearnerConceptState(Base):
+    """A learner's current BKT mastery estimate for one concept."""
+
+    __tablename__ = "learner_concept_state"
+    user_id = Column(UUID(as_uuid=True), primary_key=True)
+    concept_id = Column(
+        UUID(as_uuid=True), ForeignKey("concepts.id", ondelete="CASCADE"), primary_key=True
+    )
+    mastery_probability = Column(Float, nullable=False)
+    attempts = Column(Integer, nullable=False, default=0)
+    correct_attempts = Column(Integer, nullable=False, default=0)
+    last_practiced_at = Column(DateTime(timezone=True), nullable=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
 class ErrorLabel(Base):
     """ 
     One or more detected mistakes tied to a LearningEvent, 
