@@ -51,5 +51,23 @@ class AttemptOut(BaseModel):
     score: float
     explanation: str | None
     errors: list[DetectedErrorOut] = []
-
     model_config = {"from_attributes": True}
+
+
+class LearningEventIn(BaseModel):
+    user_id: uuid.UUID
+    exercise_id: uuid.UUID
+    response: dict
+    response_time_ms: Optional[int] = None
+    hint_used: bool = False
+
+
+class LearningEventOut(BaseModel):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    exercise_id: uuid.UUID
+    correct: bool
+    score: float
+    evaluation_method: str
+    explanation: str | None
+    errors: list[DetectedErrorOut] = []
