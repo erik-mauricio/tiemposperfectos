@@ -1,62 +1,24 @@
+import json
+from pathlib import Path
+
 from database import SessionLocal
 from models import Concept, Exercise, ExerciseConcept
 
-STARTER_CONCEPTS = [
-    {
-        "slug": "simple_present",
-        "name": "Simple Present",
-        "category": "grammar",
-        "difficulty": 1,
-        "extra_metadata": {
-            "description": "Used for habits, facts, and routines (e.g. 'She works every day')."
-        },
-    },
-    {
-        "slug": "subject_verb_agreement",
-        "name": "Subject-Verb Agreement",
-        "category": "grammar",
-        "difficulty": 1,
-        "extra_metadata": {
-            "description": "Matching a verb's form to its subject (e.g. 'She works', not 'She work')."
-        },
-    },
-    {
-        "slug": "simple_past",
-        "name": "Simple Past",
-        "category": "grammar",
-        "difficulty": 2,
-        "extra_metadata": {
-            "description": "Used for completed actions in the past (e.g. 'She worked yesterday')."
-        },
-    },
-    {
-        "slug": "a_vs_an",
-        "name": "A vs. An",
-        "category": "grammar",
-        "difficulty": 1,
-        "extra_metadata": {
-            "description": "Choosing between the indefinite articles 'a' and 'an' based on sound."
-        },
-    },
-    {
-        "slug": "everyday_vocabulary",
-        "name": "Everyday Vocabulary",
-        "category": "vocabulary",
-        "difficulty": 1,
-        "extra_metadata": {
-            "description": "Common words used in daily life (e.g. food, family, weather)."
-        },
-    },
-    {
-        "slug": "basic_word_order",
-        "name": "Basic Word Order",
-        "category": "sentence_building",
-        "difficulty": 1,
-        "extra_metadata": {
-            "description": "Standard English subject-verb-object order (e.g. 'I eat rice')."
-        },
-    },
-]
+REPO_ROOT = Path(__file__).parent.parent
+CONCEPTS_REGISTRY_PATH = REPO_ROOT / "ml" / "registry" / "concepts.json"
+
+# Concepts renamed since the original hand-written seed list, so a slug
+# already persisted under the old name gets renamed in place instead of
+# being seeded a second time under the new one.
+RENAMED_CONCEPT_SLUGS = {
+    "a_vs_an": "article_usage",
+    "basic_word_order": "word_order",
+}
+
+
+def load_concepts_from_registry() -> list[dict]:
+    with open(CONCEPTS_REGISTRY_PATH) as f:
+        return json.load(f)
 
 
 EXERCISE_SEEDS = [
@@ -116,7 +78,7 @@ EXERCISE_SEEDS = [
         "cefr_level": "A2",
     },
     {
-        "concept_slugs": ["a_vs_an"],
+        "concept_slugs": ["article_usage"],
         "type": "multiple_choice",
         "prompt": {
             "question": "Choose the correct sentence.",
@@ -137,7 +99,7 @@ EXERCISE_SEEDS = [
         "cefr_level": "A2",
     },
     {
-        "concept_slugs": ["basic_word_order"],
+        "concept_slugs": ["word_order"],
         "type": "sentence_correction",
         "prompt": {"sentence": "Rice I eat."},
         "accepted_answers": ["I eat rice."],
@@ -145,17 +107,182 @@ EXERCISE_SEEDS = [
         "difficulty": 1.0,
         "cefr_level": "A2",
     },
+    {
+        "concept_slugs": ["simple_future"],
+        "type": "fill_blank",
+        "prompt": {"sentence": "Tomorrow, she ____ (call) the doctor."},
+        "accepted_answers": ["will call"],
+        "explanation": "Use 'will' + the base verb for the simple future.",
+        "difficulty": 2.0,
+        "cefr_level": "A2",
+    },
+    {
+        "concept_slugs": ["present_continuous"],
+        "type": "fill_blank",
+        "prompt": {"sentence": "Right now, she ____ (work) on her homework."},
+        "accepted_answers": ["is working"],
+        "explanation": "The present continuous is formed with 'be' + verb-ing.",
+        "difficulty": 2.0,
+        "cefr_level": "A2",
+    },
+    {
+        "concept_slugs": ["pronouns", "direct_object_pronouns"],
+        "type": "sentence_correction",
+        "prompt": {"sentence": "I saw she at the park."},
+        "accepted_answers": ["I saw her at the park."],
+        "explanation": "'Her' is the direct object pronoun form, not 'she'.",
+        "difficulty": 2.0,
+        "cefr_level": "B1",
+    },
+    {
+        "concept_slugs": ["pronouns", "indirect_object_pronouns"],
+        "type": "sentence_correction",
+        "prompt": {"sentence": "Give the book to I."},
+        "accepted_answers": ["Give the book to me."],
+        "explanation": "'Me' is the indirect object pronoun form, not 'I'.",
+        "difficulty": 2.0,
+        "cefr_level": "B1",
+    },
+    {
+        "concept_slugs": ["spelling"],
+        "type": "spelling",
+        "prompt": {"sentence": "I did not recieve your message."},
+        "accepted_answers": ["receive"],
+        "explanation": "'Receive' follows 'i before e except after c'.",
+        "difficulty": 2.0,
+        "cefr_level": "B1",
+    },
+    {
+        "concept_slugs": ["word_choice"],
+        "type": "sentence_correction",
+        "prompt": {"sentence": "I am agree with you."},
+        "accepted_answers": ["I agree with you."],
+        "explanation": "'Agree' is already a verb; it doesn't need 'am' before it.",
+        "difficulty": 2.0,
+        "cefr_level": "B1",
+    },
+    {
+        "concept_slugs": ["main_idea"],
+        "type": "reading_comprehension",
+        "prompt": {
+            "passage": "Maria works at a bakery every morning. She bakes bread, "
+            "helps customers, and cleans the shop before it opens. By the time "
+            "the doors open, the smell of fresh bread fills the street.",
+            "question": "What is the main idea of this passage?",
+            "choices": [
+                "Maria bakes bread every morning before the shop opens.",
+                "Bread has a pleasant smell.",
+                "Customers like to visit bakeries.",
+            ],
+        },
+        "accepted_answers": ["Maria bakes bread every morning before the shop opens."],
+        "explanation": "The passage centers on Maria's morning routine at the bakery, not on bread's smell or customer preferences generally.",
+        "difficulty": 2.0,
+        "cefr_level": "B1",
+    },
+    {
+        "concept_slugs": ["detail_retrieval"],
+        "type": "reading_comprehension",
+        "prompt": {
+            "passage": "Maria works at a bakery every morning. She bakes bread, "
+            "helps customers, and cleans the shop before it opens.",
+            "question": "What does Maria do before the shop opens?",
+            "choices": [
+                "She bakes bread, helps customers, and cleans the shop.",
+                "She only bakes bread.",
+                "She closes the shop early.",
+            ],
+        },
+        "accepted_answers": ["She bakes bread, helps customers, and cleans the shop."],
+        "explanation": "The passage explicitly lists these three tasks as happening before the shop opens.",
+        "difficulty": 1.0,
+        "cefr_level": "A2",
+    },
+    {
+        "concept_slugs": ["inference"],
+        "type": "reading_comprehension",
+        "prompt": {
+            "passage": "Maria arrived at the bakery an hour earlier than usual. "
+            "She wanted everything ready before the big morning rush.",
+            "question": "Why did Maria arrive early?",
+            "choices": [
+                "She expected more customers than usual.",
+                "The bakery was closed the day before.",
+                "She forgot her keys the previous day.",
+            ],
+        },
+        "accepted_answers": ["She expected more customers than usual."],
+        "explanation": "The passage implies, but doesn't directly state, that Maria expected a busier morning ('the big morning rush').",
+        "difficulty": 3.0,
+        "cefr_level": "B1",
+    },
+    {
+        "concept_slugs": ["vocabulary_in_context"],
+        "type": "reading_comprehension",
+        "prompt": {
+            "passage": "After the long hike, everyone was famished and ate dinner quickly.",
+            "question": "In this passage, 'famished' most nearly means:",
+            "choices": ["very hungry", "very tired", "very happy"],
+        },
+        "accepted_answers": ["very hungry"],
+        "explanation": "The context ('ate dinner quickly') signals that 'famished' means very hungry.",
+        "difficulty": 2.0,
+        "cefr_level": "B1",
+    },
 ]
 
 
 def seed_concepts():
+    concepts_data = load_concepts_from_registry()
+    slugs = {c["slug"] for c in concepts_data}
+
     db = SessionLocal()
     try:
-        for data in STARTER_CONCEPTS:
+        for old_slug, new_slug in RENAMED_CONCEPT_SLUGS.items():
+            if new_slug not in slugs:
+                continue
+            existing = db.query(Concept).filter(Concept.slug == old_slug).first()
+            renamed_already = db.query(Concept).filter(Concept.slug == new_slug).first()
+            if existing and not renamed_already:
+                existing.slug = new_slug
+        db.commit()
+
+        # Two-pass insert: concepts first (so every slug has a row and a
+        # primary key to reference), then patch parent_id from parent_slug.
+        for data in concepts_data:
+            parent_slug = data.get("parent_slug")
+            if parent_slug and parent_slug not in slugs:
+                raise ValueError(
+                    f"Concept '{data['slug']}' references unknown parent slug "
+                    f"'{parent_slug}'"
+                )
+
             exists = db.query(Concept).filter(Concept.slug == data["slug"]).first()
             if exists:
                 continue
-            db.add(Concept(**data))
+            db.add(
+                Concept(
+                    slug=data["slug"],
+                    name=data["name"],
+                    category=data["category"],
+                    difficulty=data["difficulty"],
+                    extra_metadata={
+                        "description": data["description"],
+                        "example_errors": data["example_errors"],
+                    },
+                )
+            )
+        db.commit()
+
+        concepts_by_slug = {c.slug: c for c in db.query(Concept).all()}
+        for data in concepts_data:
+            parent_slug = data.get("parent_slug")
+            if not parent_slug:
+                continue
+            concept = concepts_by_slug[data["slug"]]
+            parent = concepts_by_slug[parent_slug]
+            if concept.parent_id != parent.id:
+                concept.parent_id = parent.id
         db.commit()
     finally:
         db.close()
