@@ -8,3 +8,5 @@ python-socketio
 openai
 scikit-learn
 joblib
+pytest
+httpx
