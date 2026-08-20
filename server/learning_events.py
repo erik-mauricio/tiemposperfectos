@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 
 from correctness import evaluate_correctness
 from llm_error_classifier import classify_errors
+from mastery import apply_learning_event
 from mistake_detection import detect_errors
 from models import Concept, ErrorLabel, Exercise, ExerciseConcept, LearningEvent
 
@@ -112,17 +113,18 @@ def record_learning_event(
     db.flush()
 
     detected_errors = []
+    error_label_rows = []
     for error, model_version in raw_errors:
         concept = error_concepts_by_slug.get(error["concept"])
-        db.add(
-            ErrorLabel(
-                learning_event_id=learning_event.id,
-                label=error["label"],
-                concept_id=concept.id if concept else None,
-                confidence=error["confidence"],
-                model_version=model_version,
-            )
+        error_label = ErrorLabel(
+            learning_event_id=learning_event.id,
+            label=error["label"],
+            concept_id=concept.id if concept else None,
+            confidence=error["confidence"],
+            model_version=model_version,
         )
+        db.add(error_label)
+        error_label_rows.append(error_label)
         detected_errors.append(
             DetectedErrorResult(
                 label=error["label"],
@@ -133,6 +135,15 @@ def record_learning_event(
                 model_version=model_version,
             )
         )
+
+    apply_learning_event(
+        db,
+        learning_event,
+        exercise,
+        correctness["isCorrect"],
+        target_concept_ids,
+        error_label_rows,
+    )
 
     return LearningEventResult(
         learning_event=learning_event,
