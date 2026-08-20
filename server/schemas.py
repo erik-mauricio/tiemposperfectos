@@ -71,3 +71,10 @@ class LearningEventOut(BaseModel):
     evaluation_method: str
     explanation: str | None
     errors: list[DetectedErrorOut] = []
+
+
+class RecommendationOut(BaseModel):
+    exercise: ExerciseOut
+    score: float
+    reasons: list[str]
+    concept_slug: str | None
