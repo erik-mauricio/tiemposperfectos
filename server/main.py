@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from learning_events import record_learning_event
 from models import Attempt, Concept, DetectedError, Exercise, ExerciseConcept
+from recommendations import generate_recommendations
 from schemas import (
     AttemptIn,
     AttemptOut,
@@ -16,6 +17,7 @@ from schemas import (
     ExerciseOut,
     LearningEventIn,
     LearningEventOut,
+    RecommendationOut,
 )
 
 app = FastAPI()
@@ -355,3 +357,38 @@ def get_mastery(concept_slug: str, user_id: uuid.UUID, db: Session = Depends(get
         "correct_count": correct_count,
         "mastery": mastery,
     }
+
+
+@app.get("/users/{user_id}/recommendations", response_model=list[RecommendationOut])
+def get_recommendations(
+    user_id: uuid.UUID,
+    n: int = 5,
+    db: Session = Depends(get_db),
+):
+    """
+    Returns up to `n` recommended exercises for `user_id`, ranked
+    best-first by a weighted combination of mastery need, review
+    recency, recent-error relevance, and difficulty fit.
+
+    Parameters:
+        user_id: uuid.UUID — the learner.
+        n: int — max recommendations to return, default 5.
+        db: Session — injected DB session.
+
+    Output:
+        list[RecommendationOut] — each with the full exercise, its
+        score, human-readable reasons, and the concept slug that drove
+        the recommendation. [] if no qualifying candidates exist (e.g.
+        a new user with no published exercises, or every concept
+        already mastered).
+    """
+    results = generate_recommendations(db, user_id, limit=n)
+    return [
+        RecommendationOut(
+            exercise=result["exercise"],
+            score=result["score"],
+            reasons=result["reasons"],
+            concept_slug=result["concept_slug"],
+        )
+        for result in results
+    ]
